@@ -40,6 +40,15 @@ void main() {
   // A bee stings a monster: a quick "zip" up.
   write('sting.wav', sweep(from: 900, to: 1900, seconds: 0.12, volume: 0.5));
 
+  // Countdown "3, 2, 1": a short blip for each number.
+  write('tick.wav', notes([880], noteLength: 0.05, tail: 0.12));
+
+  // Countdown "Go!": a bright chord going up.
+  write('go.wav', notes([784, 1047, 1568], noteLength: 0.07, tail: 0.35));
+
+  // Tapping a big menu button.
+  write('tap.wav', sweep(from: 500, to: 900, seconds: 0.1, volume: 0.5));
+
   stdout.writeln('Sounds written to $outDir/');
 }
 

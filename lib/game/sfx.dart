@@ -13,7 +13,10 @@ enum Sfx {
   caught('caught.wav'),
   levelUp('levelup.wav'),
   buzz('buzz.wav'),
-  sting('sting.wav');
+  sting('sting.wav'),
+  tick('tick.wav'),
+  go('go.wav'),
+  tap('tap.wav');
 
   const Sfx(this.file);
 
