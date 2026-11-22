@@ -65,6 +65,15 @@ void main() {
   // A monster gets a hat over its eyes: "yikes!" wobbling up and away.
   write('yikes.wav', yikes());
 
+  // A ribbon ties a monster up: "zip zip... thump!"
+  write('tied.wav', [
+    ...sweep(from: 600, to: 1400, seconds: 0.08, volume: 0.5),
+    ...List.filled((0.04 * sampleRate).round(), 0.0),
+    ...sweep(from: 700, to: 1600, seconds: 0.08, volume: 0.5),
+    ...List.filled((0.3 * sampleRate).round(), 0.0),
+    ...sweep(from: 140, to: 60, seconds: 0.18, volume: 0.8),
+  ]);
+
   // Chicks on the way: "cheep cheep cheep".
   write('cheep.wav', cheeps());
 

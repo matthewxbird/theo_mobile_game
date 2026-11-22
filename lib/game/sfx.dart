@@ -26,7 +26,8 @@ enum Sfx {
   yikes('yikes.wav'),
   cheep('cheep.wav'),
   rawr('rawr.wav'),
-  woof('woof.wav');
+  woof('woof.wav'),
+  tied('tied.wav');
 
   /// The sound of this critter's helpers setting off.
   static Sfx swarmFor(Critter critter) => switch (critter) {
