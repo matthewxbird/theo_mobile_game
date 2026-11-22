@@ -12,7 +12,7 @@ Teddy can drop honey to make monsters slip over and disappear.
 
 | Who | What they do |
 | --- | --- |
-| **Teddy** (kid's pick) | The hero. A teddy bear the player moves around. |
+| **The hero** (kid's pick) | A **bear 🐻, dinosaur 🦖, chicken 🐔 or dog 🐶**, in any of 6 colours, chosen on the start screen. |
 | **Grumpy monsters** (kid's pick) | Silly, round, not-scary blob monsters. They walk slowly towards Teddy. |
 
 ## Controls
@@ -44,7 +44,20 @@ Teddy can drop honey to make monsters slip over and disappear.
 - Teddy then blinks and is safe for 2 seconds so he can get away.
 - The monster that caught him bounces back a little.
 
-## Hats (kid's pick)
+## Each critter's own trap and helpers (kid's pick)
+
+| Critter | Trap you drop (monsters slip) | Helpers you send (chase every monster away) |
+| --- | --- | --- |
+| 🐻 Bear | 🍯 honey | 🐝 bees (buzz) |
+| 🦖 Dinosaur | 🍌 banana peel | 🦕 baby dinos (rawr) |
+| 🐔 Chicken | 🥚 splatted egg | 🐤 chicks (cheep) |
+| 🐶 Dog | 🦴 bone | 🐶 puppies (woof) |
+
+Everything else works the same: 4 traps turn into 1 helper, and you get a helper each level.
+
+## Hats and ribbons (kid's pick)
+
+- About 2 in 5 special pickups are a **pink ribbon** instead of a hat. The hero wears it as a bow. Thrown, it **ties the bad guy up in a bow**: it wriggles, **falls over**, flashes and disappears ("zip zip... thump!").
 
 - **A new hat appears every 10 seconds whenever there isn't one on the floor** (a special magic top hat, twinkling).
 - Walk over it and Teddy puts it on (it drops onto his head with a bounce and a "ta-da!"). A pulsing yellow ring around him means "tap me".
@@ -88,13 +101,13 @@ Teddy can drop honey to make monsters slip over and disappear.
 
 ## Screens
 
-- **Start screen:** pick your teddy colour (brown, pink, blue, purple, gold, red) and press the big Play button.
+- **Start screen:** pick your critter (bear, dinosaur, chicken, dog) and colour (brown, pink, blue, purple, gold, red), then press the big Play button.
 - **Get ready:** "Level N", then a big "3, 2, 1, Go!" countdown before every level, so the game never starts by surprise.
 - **Level complete party:** "Yay!", confetti, three stars popping in with blings, your teddy dancing, a "+1 🐝" prize, and a big pulsing **🚀 Level N** button. The next level only starts when the button is pressed. A small 🏠 button goes back to the start screen.
 
 ## Leaderboard
 
-- Each player picks a **teddy colour** instead of typing a name (a 4-year-old can't type yet).
+- Each player picks a **critter and colour** instead of typing a name (a 4-year-old can't type yet). Each critter + colour has its own stars; the start screen shows the chosen critter in every colour, and the leader for that critter wears a 👑.
 - The start screen shows every teddy with ⭐ = the most levels that teddy has finished. The leader wears a 👑.
 - Saved on the phone, so it's still there next time.
 
