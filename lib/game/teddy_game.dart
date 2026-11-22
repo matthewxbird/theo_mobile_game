@@ -234,11 +234,12 @@ class TeddyGame extends FlameGame {
             position: teddy.position.clone(),
             target: monster,
             delay: i * 0.12,
+            critter: critter,
           ),
         );
       }
     }
-    Sfx.buzz.play();
+    Sfx.swarmFor(critter).play();
     HapticFeedback.mediumImpact();
   }
 

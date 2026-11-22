@@ -4,13 +4,19 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 
 import '../sfx.dart';
+import '../teddy_colour.dart';
+import 'emoji.dart';
 import 'monster.dart';
 
 /// A bee from the beehive. Zooms (wobbling) to a monster and stings it.
 class Bee extends PositionComponent {
-  Bee({required super.position, required this.target, required double delay})
-    : _delay = delay,
-      super(size: Vector2(30, 24), anchor: Anchor.center, priority: 4);
+  Bee({
+    required super.position,
+    required this.target,
+    required double delay,
+    this.critter = Critter.bear,
+  }) : _delay = delay,
+       super(size: Vector2(30, 24), anchor: Anchor.center, priority: 4);
 
   static const _speed = 420.0;
   static const _stingDistance = 20.0;
@@ -24,6 +30,9 @@ class Bee extends PositionComponent {
   static final _eye = Paint()..color = const Color(0xFF212121);
 
   final Monster target;
+
+  /// Whose helper this is: bees for bears, baby dinos, chicks or puppies.
+  final Critter critter;
   double _delay;
   double _time = 0;
 
@@ -63,6 +72,12 @@ class Bee extends PositionComponent {
   @override
   void render(Canvas canvas) {
     if (_delay > 0) return;
+    if (critter != Critter.bear) {
+      // Baby dinos, chicks or puppies, bouncing along.
+      final hop = -sin(_time * 25).abs() * 4;
+      paintEmoji(canvas, critter.swarm, Offset(15, 12 + hop), 28);
+      return;
+    }
     final flap = sin(_time * 60) * 3;
     canvas.drawOval(Rect.fromLTWH(8, 0 + flap, 9, 11), _wing);
     canvas.drawOval(Rect.fromLTWH(14, 1 - flap, 9, 11), _wing);

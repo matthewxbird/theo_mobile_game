@@ -6,12 +6,16 @@ import 'package:flutter/widgets.dart';
 import '../game/layout.dart';
 import '../game/rules.dart';
 import '../game/sfx.dart';
+import '../game/teddy_colour.dart';
 
 /// The magic trick: 4 honey pots fly out of the honey button (counting
 /// 1, 2, 3, 4), swirl together, go poof, and out pops a bee that flies
 /// over to the bee button.
 class HoneyToBee extends StatefulWidget {
-  const HoneyToBee({super.key, required this.trigger});
+  const HoneyToBee({super.key, required this.trigger, required this.critter});
+
+  /// Whose trap turns into whose helper (honey into a bee for bears).
+  final Critter critter;
 
   /// Plays the animation each time this goes up.
   final ValueListenable<int> trigger;
@@ -59,7 +63,7 @@ class _HoneyToBeeState extends State<HoneyToBee>
   void _onTick() {
     if (!_buzzed && _controller.value >= _poof) {
       _buzzed = true;
-      Sfx.buzz.play();
+      Sfx.swarmFor(widget.critter).play();
     }
   }
 
@@ -115,7 +119,7 @@ class _HoneyToBeeState extends State<HoneyToBee>
               middle + _polar(radius, i * 2 * pi / _pots - pi / 2 + spin);
           size = 70 - 40 * p;
         }
-        widgets.add(_emoji('🍯', position, size));
+        widgets.add(_emoji(widget.critter.trap, position, size));
         widgets.add(
           _number(i + 1, position + Offset(size * 0.35, -size * 0.35)),
         );
@@ -151,14 +155,23 @@ class _HoneyToBeeState extends State<HoneyToBee>
       if (t < _beeLeaves) {
         final p = (t - _poof) / (_beeLeaves - _poof);
         final size = 130 * Curves.elasticOut.transform(p);
-        widgets.add(_emoji('🐝', middle, size, rotation: wiggle));
+        widgets.add(
+          _emoji(widget.critter.swarm, middle, size, rotation: wiggle),
+        );
       } else {
         final p = Curves.easeInOut.transform(
           (t - _beeLeaves) / (1 - _beeLeaves),
         );
         final position =
             Offset.lerp(middle, beeButton, p)! - Offset(0, sin(p * pi) * 140);
-        widgets.add(_emoji('🐝', position, 130 - 70 * p, rotation: wiggle));
+        widgets.add(
+          _emoji(
+            widget.critter.swarm,
+            position,
+            130 - 70 * p,
+            rotation: wiggle,
+          ),
+        );
       }
     }
 

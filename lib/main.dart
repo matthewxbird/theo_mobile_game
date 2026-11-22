@@ -121,7 +121,7 @@ class _TeddyAppState extends State<TeddyApp> {
             left: HudLayout.buttonMargin,
             bottom: HudLayout.buttonMargin,
             child: BonusButton(
-              emoji: '🐝',
+              emoji: _game.critter.swarm,
               color: const Color(0xFFFFB74D),
               count: _game.beehives,
               onPressed: _game.useBeehive,
@@ -131,13 +131,18 @@ class _TeddyAppState extends State<TeddyApp> {
             right: HudLayout.buttonMargin,
             bottom: HudLayout.buttonMargin,
             child: BonusButton(
-              emoji: '🍯',
+              emoji: _game.critter.trap,
               color: const Color(0xFFFFC107),
               count: _game.honey,
               onPressed: _game.dropHoney,
             ),
           ),
-          Positioned.fill(child: HoneyToBee(trigger: _game.honeyTurnedIntoBee)),
+          Positioned.fill(
+            child: HoneyToBee(
+              trigger: _game.honeyTurnedIntoBee,
+              critter: _game.critter,
+            ),
+          ),
         ],
       ),
     );
