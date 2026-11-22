@@ -49,6 +49,16 @@ void main() {
   // Tapping a big menu button.
   write('tap.wav', sweep(from: 500, to: 900, seconds: 0.1, volume: 0.5));
 
+  // Honey pots swirl together and turn into a bee: a twinkly magic run up.
+  write(
+    'magic.wav',
+    notes(
+      [784, 988, 1175, 1319, 1568, 1976, 2349],
+      noteLength: 0.06,
+      tail: 0.5,
+    ),
+  );
+
   // A monster eats a stolen lollipop: "nom nom nom".
   write('munch.wav', munch());
 

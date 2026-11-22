@@ -17,7 +17,8 @@ enum Sfx {
   tick('tick.wav'),
   go('go.wav'),
   tap('tap.wav'),
-  munch('munch.wav');
+  munch('munch.wav'),
+  magic('magic.wav');
 
   const Sfx(this.file);
 
