@@ -29,6 +29,32 @@ class GameRules {
   static double monsterSpeedFor(int level) =>
       min(teddySpeed * 0.55, 70.0 + 8.0 * (level - 1));
 
+  /// Each stolen lollipop makes a monster one step fatter, up to this.
+  static const maxFatness = 3.0;
+
+  /// Seconds for one lollipop's worth of fat to wear off.
+  static const fatWearOffSeconds = 7.0;
+
+  /// A hungry monster gets faster the longer it goes without a lollipop,
+  /// up to this much faster, over [hungerSeconds].
+  static const maxHungerBoost = 0.4;
+  static const hungerSeconds = 20.0;
+
+  /// How fast a monster walks, given how fat and how hungry it is.
+  /// Fat monsters waddle slowly; hungry ones hurry. Never as fast as Teddy.
+  static double monsterSpeed({
+    required int level,
+    required double fatness,
+    required double secondsHungry,
+  }) {
+    final hunger = maxHungerBoost * min(1.0, secondsHungry / hungerSeconds);
+    final fat = 1 / (1 + 0.35 * fatness.clamp(0, maxFatness));
+    return min(
+      teddySpeed * 0.8,
+      monsterSpeedFor(level) * (1 + hunger) * fat,
+    );
+  }
+
   /// When caught, Teddy loses a lollipop, but never goes below 0.
   static int sweetsLostWhenCaught(int collected) =>
       min(sweetsLostOnCatch, collected);

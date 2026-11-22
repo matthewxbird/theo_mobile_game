@@ -24,6 +24,31 @@ void main() {
       }
     });
 
+    test('fat monsters are slower and hungry monsters are faster', () {
+      double speed({double fat = 0, double hungry = 0}) => GameRules.monsterSpeed(
+            level: 1,
+            fatness: fat,
+            secondsHungry: hungry,
+          );
+      expect(speed(fat: 1), lessThan(speed()));
+      expect(speed(fat: 3), lessThan(speed(fat: 1)));
+      expect(speed(hungry: 20), greaterThan(speed()));
+      expect(speed(hungry: 1000), speed(hungry: GameRules.hungerSeconds));
+    });
+
+    test('even the hungriest monster is slower than Teddy', () {
+      for (var level = 1; level <= 100; level++) {
+        expect(
+          GameRules.monsterSpeed(
+            level: level,
+            fatness: 0,
+            secondsHungry: 1000,
+          ),
+          lessThan(GameRules.teddySpeed),
+        );
+      }
+    });
+
     test('getting caught loses one lollipop, never going below zero', () {
       expect(GameRules.sweetsLostWhenCaught(0), 0);
       expect(GameRules.sweetsLostWhenCaught(1), 1);
