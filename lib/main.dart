@@ -8,6 +8,7 @@ import 'game/rules.dart';
 import 'game/teddy_colour.dart';
 import 'game/teddy_game.dart';
 import 'ui/get_ready.dart';
+import 'ui/honey_to_bee.dart';
 import 'ui/hud.dart';
 import 'ui/level_complete.dart';
 import 'ui/start_screen.dart';
@@ -132,6 +133,7 @@ class _TeddyAppState extends State<TeddyApp> {
               onPressed: _game.dropHoney,
             ),
           ),
+          Positioned.fill(child: HoneyToBee(trigger: _game.honeyTurnedIntoBee)),
         ],
       ),
     );
