@@ -39,22 +39,47 @@ Teddy can drop honey to make monsters slip over and disappear.
 
 ## Getting caught
 
-- **Never game over.** (kid's pick) When a monster catches Teddy, he drops a few sweets (lose up to 3 points, never below 0).
+- **Never game over.** (kid's pick) When a monster catches Teddy, he **loses one lollipop** (never below 0).
 - Teddy then blinks and is safe for 2 seconds so he can get away.
 - The monster that caught him bounces back a little.
+
+## Levels
+
+- **Level 1 ends at 6 lollipops; each level needs 2 more** (8, 10, 12...).
+- The lollipop count shows progress for this level (e.g. `3/6`); a star badge shows the level.
+- Each level has one more monster (up to 3), and monsters get a bit faster, but always stay slower than Teddy.
+- Finishing a level makes all monsters flash and fade away.
+
+## Beehive (bonus)
+
+- **You get 1 beehive each time you finish a level.** Beehives build up across levels.
+- Tap the beehive button: bees fly from Teddy to **every** monster, sting them, and the monsters flash and fade out.
+- A beehive isn't used up if there are no monsters to sting.
+
+## Screens
+
+- **Start screen:** pick your teddy colour (brown, pink, blue, purple, gold, red) and press the big Play button.
+- **Get ready:** "Level N", then a big "3, 2, 1, Go!" countdown before every level, so the game never starts by surprise.
+- **Level complete party:** "Yay!", confetti, three stars popping in with blings, your teddy dancing, a "+1 🐝" prize, and a big pulsing **🚀 Level N** button. The next level only starts when the button is pressed. A small 🏠 button goes back to the start screen.
+
+## Leaderboard
+
+- Each player picks a **teddy colour** instead of typing a name (a 4-year-old can't type yet).
+- The start screen shows every teddy with ⭐ = the most levels that teddy has finished. The leader wears a 👑.
+- Saved on the phone, so it's still there next time.
 
 ## Making it easy for a 4-year-old
 
 - Monsters are slower than Teddy, always.
-- Few monsters at once: start with 1, slowly grow to a maximum of 3.
+- Few monsters at once: 1 on level 1, up to a maximum of 3.
 - A new monster appears at the edge of the screen a few seconds after one disappears, never right next to Teddy.
-- Big, bright, friendly art. Large touch targets (the honey button is at least 80 px).
-- No timers, no fail state, no menus to get through. Open the app and play.
+- Big, bright, friendly art. Large touch targets (bonus buttons are over 100 px).
+- No timers and no fail state.
 - Sounds and pictures instead of words.
 
-## Out of scope for the first version
+## Out of scope for now
 
-- Levels, menus, settings, saving high scores.
+- Settings, typed names.
 - Multiple playgrounds or characters.
 
 ## Ideas for later (the "programming" part)
