@@ -95,6 +95,7 @@ class Playground extends PositionComponent with TapCallbacks {
       sea.lineTo(x, tide + sin(x / 30 + _time * 2) * 6);
     }
     sea
+      ..lineTo(size.x, tide)
       ..lineTo(size.x, 0)
       ..close();
     canvas.drawPath(sea, _sea);
@@ -112,17 +113,17 @@ class Playground extends PositionComponent with TapCallbacks {
       i++;
       if (i.isEven) {
         canvas.drawArc(
-          Rect.fromCenter(center: c, width: 14, height: 12),
+          Rect.fromCenter(center: c, width: 24, height: 20),
           pi,
           pi,
           true,
           _shell,
         );
         for (final dx in const [-3.0, 0.0, 3.0]) {
-          canvas.drawLine(c, c + Offset(dx * 1.5, -5), _shellLine);
+          canvas.drawLine(c, c + Offset(dx * 2.5, -9), _shellLine);
         }
       } else {
-        canvas.drawPath(starPath(c, 8), _starfish);
+        canvas.drawPath(starPath(c, 13), _starfish);
       }
     }
   }
@@ -155,7 +156,7 @@ class Playground extends PositionComponent with TapCallbacks {
     var i = 0;
     for (final c in _points) {
       i++;
-      final twinkle = 3 + 2 * sin(_time * 3 + i);
+      final twinkle = 5 + 2.5 * sin(_time * 3 + i);
       canvas.drawPath(starPath(c, twinkle), _yellow);
     }
   }
