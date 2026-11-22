@@ -28,7 +28,36 @@ void main() {
   // A monster catches Teddy: a bouncy "boing".
   write('caught.wav', boing());
 
+  // Level complete: a little fanfare.
+  write(
+    'levelup.wav',
+    notes([523, 659, 784, 1047], noteLength: 0.13, tail: 0.6),
+  );
+
+  // The beehive is opened: a swarm of buzzing bees.
+  write('buzz.wav', buzz());
+
+  // A bee stings a monster: a quick "zip" up.
+  write('sting.wav', sweep(from: 900, to: 1900, seconds: 0.12, volume: 0.5));
+
   stdout.writeln('Sounds written to $outDir/');
+}
+
+List<double> buzz() {
+  const seconds = 0.9;
+  final count = (seconds * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final t = n / sampleRate;
+    final f = 200 + 25 * sin(2 * pi * 6 * t);
+    phase += f / sampleRate;
+    // A sawtooth wave sounds buzzy; the fast wobble makes it flutter.
+    final saw = 2 * (phase - phase.floor()) - 1;
+    final flutter = 0.7 + 0.3 * sin(2 * pi * 28 * t);
+    out.add(0.35 * saw * flutter * envelope(n, count, attack: 0.05));
+  }
+  return out;
 }
 
 List<double> notes(List<double> frequencies,

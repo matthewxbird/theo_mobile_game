@@ -10,7 +10,10 @@ enum Sfx {
   jar('jar.wav'),
   honey('honey.wav'),
   slip('slip.wav'),
-  caught('caught.wav');
+  caught('caught.wav'),
+  levelUp('levelup.wav'),
+  buzz('buzz.wav'),
+  sting('sting.wav');
 
   const Sfx(this.file);
 
