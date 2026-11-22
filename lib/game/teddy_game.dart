@@ -12,6 +12,7 @@ import 'components/playground.dart';
 import 'components/stolen_lolly.dart';
 import 'components/sweet.dart';
 import 'components/teddy.dart';
+import 'layout.dart';
 import 'rules.dart';
 import 'sfx.dart';
 import 'teddy_colour.dart';
@@ -23,13 +24,12 @@ class TeddyGame extends FlameGame {
   TeddyGame({Random? random}) : _random = random ?? Random();
 
   /// Space left at the top for the score.
-  static const hudHeight = 110.0;
+  static const hudHeight = HudLayout.topHeight;
   static const edgeMargin = 40.0;
   static const _pickupDistance = 45.0;
   static const _catchDistance = 48.0;
   static const _honeyDistance = 40.0;
   static const _beesPerMonster = 3;
-  static const _buttonStrip = 130.0;
 
   static const _monsterColors = [
     Color(0xFF9B6BD6),
@@ -303,7 +303,7 @@ class TeddyGame extends FlameGame {
 
   Vector2 _randomFieldPoint() {
     // Keep pickups out of the strip with the big bonus buttons.
-    final bottom = max(field.top, field.bottom - _buttonStrip);
+    final bottom = max(field.top, size.y - HudLayout.bottomStrip);
     var point = Vector2.zero();
     for (var i = 0; i < 20; i++) {
       point = Vector2(

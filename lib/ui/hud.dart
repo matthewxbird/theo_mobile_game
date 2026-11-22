@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../game/layout.dart';
+
 const _brown = Color(0xFF5D3A1A);
 
 /// A rounded white badge with an emoji and some big text.
@@ -54,10 +56,11 @@ class ScoreBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: Listenable.merge([score, level]),
-      builder: (context, _) => _Badge(
-        emoji: '🍭',
-        text: '${score.value}/${needed(level.value)}',
-      ),
+      builder:
+          (context, _) => _Badge(
+            emoji: '🍭',
+            text: '${score.value}/${needed(level.value)}',
+          ),
     );
   }
 }
@@ -105,8 +108,8 @@ class BonusButton extends StatelessWidget {
           child: Opacity(
             opacity: empty ? 0.4 : 1,
             child: SizedBox(
-              width: 112,
-              height: 112,
+              width: HudLayout.buttonSize,
+              height: HudLayout.buttonSize,
               child: Stack(
                 children: [
                   Container(
@@ -115,9 +118,7 @@ class BonusButton extends StatelessWidget {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: empty
-                          ? const Color(0xFFBDBDBD)
-                          : color,
+                      color: empty ? const Color(0xFFBDBDBD) : color,
                       border: Border.all(
                         color: const Color(0xFF8D5524),
                         width: 5,

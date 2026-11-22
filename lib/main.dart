@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'game/layout.dart';
 import 'game/leaderboard.dart';
 import 'game/rules.dart';
 import 'game/teddy_colour.dart';
@@ -65,24 +66,26 @@ class _TeddyAppState extends State<TeddyApp> {
           GameWidget(game: _game),
           ValueListenableBuilder<GamePhase>(
             valueListenable: _game.phase,
-            builder: (context, phase, _) => switch (phase) {
-              GamePhase.menu => _loaded
-                  ? StartScreen(leaderboard: _leaderboard, onPlay: _play)
-                  : const SizedBox.expand(),
-              GamePhase.ready => Stack(
-                  children: [
-                    _hud(),
-                    GetReady(level: _game.level.value, onDone: _game.go),
-                  ],
-                ),
-              GamePhase.playing => _hud(),
-              GamePhase.levelComplete => LevelCompleteScreen(
-                  colour: _game.colour,
-                  nextLevel: _game.level.value,
-                  onNext: _game.nextLevel,
-                  onHome: _game.backToMenu,
-                ),
-            },
+            builder:
+                (context, phase, _) => switch (phase) {
+                  GamePhase.menu =>
+                    _loaded
+                        ? StartScreen(leaderboard: _leaderboard, onPlay: _play)
+                        : const SizedBox.expand(),
+                  GamePhase.ready => Stack(
+                    children: [
+                      _hud(),
+                      GetReady(level: _game.level.value, onDone: _game.go),
+                    ],
+                  ),
+                  GamePhase.playing => _hud(),
+                  GamePhase.levelComplete => LevelCompleteScreen(
+                    colour: _game.colour,
+                    nextLevel: _game.level.value,
+                    onNext: _game.nextLevel,
+                    onHome: _game.backToMenu,
+                  ),
+                },
           ),
         ],
       ),
@@ -110,8 +113,8 @@ class _TeddyAppState extends State<TeddyApp> {
             child: IgnorePointer(child: LevelBadge(level: _game.level)),
           ),
           Positioned(
-            left: 24,
-            bottom: 24,
+            left: HudLayout.buttonMargin,
+            bottom: HudLayout.buttonMargin,
             child: BonusButton(
               emoji: '🐝',
               color: const Color(0xFFFFB74D),
@@ -120,8 +123,8 @@ class _TeddyAppState extends State<TeddyApp> {
             ),
           ),
           Positioned(
-            right: 24,
-            bottom: 24,
+            right: HudLayout.buttonMargin,
+            bottom: HudLayout.buttonMargin,
             child: BonusButton(
               emoji: '🍯',
               color: const Color(0xFFFFC107),
