@@ -249,13 +249,13 @@ class TeddyGame extends FlameGame {
     _spawnHat(dt);
   }
 
-  /// Only one hat at a time: none while Teddy wears one, one lies on the
-  /// floor, or one is flying.
+  /// Is there a hat lying on the floor right now?
+  bool get hasHatOnFloor => children.any((c) => c is HatPickup && !c.collected);
+
+  /// A new hat every few seconds, unless there's already one on the floor.
+  /// (Teddy can still only wear one: he won't pick it up while wearing one.)
   void _spawnHat(double dt) {
-    final hatAround =
-        teddy.hasHat ||
-        children.any((c) => c is ThrownHat || (c is HatPickup && !c.collected));
-    if (hatAround) return;
+    if (hasHatOnFloor) return;
     _hatTimer -= dt;
     if (_hatTimer > 0) return;
     _hatTimer = GameRules.hatInterval;

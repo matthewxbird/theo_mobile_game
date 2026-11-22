@@ -13,9 +13,9 @@ class GameRules {
   static const honeyToBeeSeconds = 1.8;
   static const honeyJarInterval = 12.0;
 
-  /// Hats are special: one turns up this often, and only when Teddy has no
-  /// hat and there isn't one on the floor or flying already.
-  static const hatInterval = 25.0;
+  /// A hat turns up this often whenever there isn't one on the floor.
+  /// Teddy can still only wear one hat at a time.
+  static const hatInterval = 10.0;
 
   /// Tap this close to Teddy to throw his hat.
   static const hatTapDistance = 60.0;

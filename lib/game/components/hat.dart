@@ -89,7 +89,13 @@ class ThrownHat extends PositionComponent with HasGameReference<TeddyGame> {
     if (!target.isMounted || !target.isChasing) {
       final next = game.nearestMonsterTo(position);
       if (next == null) {
-        game.add(HatPickup(position: game.clampToField(position)));
+        // Never two hats on the floor: if one's there, this one goes back
+        // on Teddy's head instead.
+        if (game.hasHatOnFloor) {
+          game.teddy.hasHat = true;
+        } else {
+          game.add(HatPickup(position: game.clampToField(position)));
+        }
         removeFromParent();
         return;
       }
