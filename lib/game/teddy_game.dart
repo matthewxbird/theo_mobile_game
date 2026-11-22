@@ -14,6 +14,7 @@ import 'components/stolen_lolly.dart';
 import 'components/sweet.dart';
 import 'components/teddy.dart';
 import 'layout.dart';
+import 'place.dart';
 import 'rules.dart';
 import 'sfx.dart';
 import 'teddy_colour.dart';
@@ -45,6 +46,13 @@ class TeddyGame extends FlameGame {
     Color(0xFF8E244D),
   ];
 
+  /// Bright bats so they show up against the dark night sky.
+  static const _nightBatColors = [
+    Color(0xFF9575CD),
+    Color(0xFFF06292),
+    Color(0xFF4DB6AC),
+  ];
+
   final Random _random;
 
   /// Lollipops collected on this level.
@@ -72,6 +80,9 @@ class TeddyGame extends FlameGame {
   double _hatTimer = GameRules.hatInterval;
 
   bool get isPlaying => phase.value == GamePhase.playing;
+
+  /// Where Teddy is playing on this level.
+  Place get place => Place.forLevel(level.value);
   TeddyColour get colour => teddy.colour;
 
   /// Start a new game from level 1 with the chosen teddy.
@@ -186,7 +197,7 @@ class TeddyGame extends FlameGame {
   Future<void> onLoad() async {
     await Sfx.load();
     teddy = Teddy(position: size / 2);
-    add(Playground(onTap: _onTap));
+    add(Playground(onTap: _onTap, place: () => place));
     add(teddy);
     for (var i = 0; i < GameRules.sweetsOnScreen; i++) {
       _spawnSweet();
@@ -377,8 +388,15 @@ class TeddyGame extends FlameGame {
     _monsterTimer -= dt;
     if (_monsterTimer > 0) return;
     _monsterTimer = GameRules.monsterRespawnDelay;
-    final isBat = _random.nextDouble() < GameRules.batChance;
-    final colours = isBat ? _batColors : _monsterColors;
+    final batChance =
+        place == Place.night ? GameRules.batChanceAtNight : GameRules.batChance;
+    final isBat = _random.nextDouble() < batChance;
+    final colours =
+        !isBat
+            ? _monsterColors
+            : place == Place.night
+            ? _nightBatColors
+            : _batColors;
     add(
       Monster(
         position: _edgePointAwayFromTeddy(),
