@@ -14,6 +14,9 @@ These three rules MUST always be followed:
 - `lib/game/rules.dart`: every tuning number (speeds, counts, timers). Change difficulty here. Tested in `test/game_rules_test.dart`.
 - `lib/game/components/`: Teddy, monsters, sweets, honey. All art is drawn with `Canvas`; there are no image assets yet.
 - Sound effects: `lib/game/sfx.dart` (`Sfx.sweet.play()` etc., using `flame_audio` `AudioPool`s preloaded in `onLoad`). The WAVs in `assets/audio/` are generated from sine waves by `tool/generate_sounds.dart` (`dart run tool/generate_sounds.dart`): edit the script and rerun it to change a sound, don't hand-edit the WAVs.
+- Screens are driven by `TeddyGame.phase` (`menu` → `ready` → `playing` → `levelComplete`). Game logic only runs while `playing`. `lib/main.dart` switches between Flutter overlays (`lib/ui/start_screen.dart`, `get_ready.dart`, `level_complete.dart`) on top of the `GameWidget`.
+- Teddy art is shared: `paintTeddy()` in `lib/game/teddy_colour.dart` is used by both the game component and the menus (`TeddyPicture`).
+- Leaderboard: `lib/game/leaderboard.dart`, stored with `shared_preferences` (best level per teddy colour). Check it on the phone with `adb shell run-as com.theo.theo_mobile_game cat shared_prefs/FlutterSharedPreferences.xml`.
 - Components are added straight to the game (screen coordinates), not to `world`, so there is no camera to think about.
 - Game state the HUD shows (`score`, `honey`) is exposed as `ValueNotifier`s on `TeddyGame`.
 
@@ -34,5 +37,7 @@ These three rules MUST always be followed:
 - Screenshots from the phone: use the Bash tool, `adb exec-out screencap -p > shot.png`. PowerShell `>` corrupts the binary PNG. Simulate taps with `adb shell input tap X Y` (physical pixels; the S24 FE screen is 1080x2340).
 - To confirm a sound played on the phone without listening: `adb logcat -c`, trigger it, then grep logcat for `Received media started message`.
 - `python3` isn't available in Git Bash on this machine; write helper scripts in Dart (`tool/`) instead.
+- The phone is often being played by a person while you test. Check with a screenshot before simulating taps, and don't press Home or Play mid-game (it resets their progress).
+- The Bash tool blocks `sleep N && ...`. Wait on the `flutter run` terminal output instead, or put the delay inside a script.
 - After adding a package, hot reload isn't enough: stop `flutter run` and start it again.
 - Phone only shows in `flutter devices` once USB debugging is on, USB mode is File transfer, and the RSA prompt is accepted.
