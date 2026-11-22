@@ -48,6 +48,6 @@ These three rules MUST always be followed:
 - New sound files need a full restart, not hot reload: `Sfx.load()` only runs in `onLoad`. Check they loaded with `adb logcat -d | grep -o "getDuration: [0-9]* (msec)" | sort -u` (one line per sound).
 - Don't use `perl -0pi` with `|` alternation in the pattern to edit Dart: a stray empty alternative matched at the top of `teddy_game.dart` and mangled it. Use the Edit tool for multi-line changes.
 - To see a component's drawing without playing to that level (e.g. a late-level place), copy a throwaway test into `test/` that calls its `render` on a `PictureRecorder` and writes a PNG, run it by path, then delete it.
-- Places (`lib/game/place.dart`) change every `GameRules.levelsPerPlace` levels; `Playground` draws the floor and decorations for the current place.
+- Places (`lib/game/place.dart`): `TeddyGame.place` is picked with `Place.randomAfter` on each new game and next level (random, never the same twice). `Playground` draws the floor and decorations for it.
 - After adding a package, hot reload isn't enough: stop `flutter run` and start it again.
 - Phone only shows in `flutter devices` once USB debugging is on, USB mode is File transfer, and the RSA prompt is accepted.

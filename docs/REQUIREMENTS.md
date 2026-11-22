@@ -75,7 +75,7 @@ Teddy can drop honey to make monsters slip over and disappear.
 ## Levels
 
 - **Level 1 ends at 6 lollipops; each level needs 2 more** (8, 10, 12, 14), **up to 16** from level 6 on, so later levels never drag on for a 5-year-old.
-- **A new place every level** (kid's pick: every level looks different from the last): meadow 🌼, beach 🏖️ (rolling waves, shells and starfish), snow ❄️ (drifts and falling snowflakes), night 🌙 (moon and twinkling stars), then round again. The "Get ready" countdown shows the place. At night most bad guys are bats, in bright colours so they're easy to see.
+- **A surprise place every level** (kid's pick): picked at random, but never the same as the level before. Meadow 🌼, beach 🏖️ (rolling waves, shells and starfish), snow ❄️ (drifts and falling snowflakes), night 🌙 (moon and twinkling stars). The "Get ready" countdown shows the place. At night most bad guys are bats, in bright colours so they're easy to see.
 - The lollipop count shows progress for this level (e.g. `3/6`); a star badge shows the level.
 - Each level has one more monster (up to 3), and monsters get a bit faster, but always stay slower than Teddy.
 - Finishing a level makes all monsters flash and fade away.
