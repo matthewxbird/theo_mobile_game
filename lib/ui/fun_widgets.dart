@@ -65,7 +65,13 @@ class _TeddyPictureState extends State<TeddyPicture>
             angle: wiggle,
             child: CustomPaint(
               size: Size.square(widget.size),
-              painter: _TeddyPainter(widget.colour),
+              painter: _TeddyPainter(
+                widget.colour,
+                // Dancing teddies wave their arms and grin.
+                arms: widget.dancing ? sin(t * 2) : 0,
+                step: widget.dancing ? sin(t * 2) : 0,
+                happy: widget.dancing,
+              ),
             ),
           ),
         );
@@ -75,18 +81,36 @@ class _TeddyPictureState extends State<TeddyPicture>
 }
 
 class _TeddyPainter extends CustomPainter {
-  _TeddyPainter(this.colour);
+  _TeddyPainter(
+    this.colour, {
+    this.arms = 0,
+    this.step = 0,
+    this.happy = false,
+  });
 
   final TeddyColour colour;
+  final double arms;
+  final double step;
+  final bool happy;
 
   @override
   void paint(Canvas canvas, Size size) {
     canvas.scale(size.width / 76);
-    paintTeddy(canvas, colour.fur);
+    paintTeddy(
+      canvas,
+      colour.fur,
+      arms: arms,
+      step: step,
+      face: happy ? TeddyFace.happy : TeddyFace.smile,
+    );
   }
 
   @override
-  bool shouldRepaint(_TeddyPainter oldDelegate) => oldDelegate.colour != colour;
+  bool shouldRepaint(_TeddyPainter oldDelegate) =>
+      oldDelegate.colour != colour ||
+      oldDelegate.arms != arms ||
+      oldDelegate.step != step ||
+      oldDelegate.happy != happy;
 }
 
 /// A big, chunky, gently pulsing button that's hard to miss.
