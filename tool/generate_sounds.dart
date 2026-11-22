@@ -1,0 +1,150 @@
+// Makes the game's sound effects from simple waves, so we need no sound files
+// from anywhere else. Run with: dart run tool/generate_sounds.dart
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
+
+const sampleRate = 22050;
+const outDir = 'assets/audio';
+
+void main() {
+  Directory(outDir).createSync(recursive: true);
+
+  // Teddy picks up a sweet: quick happy "bling" going up.
+  write('sweet.wav', notes([1047, 1319, 1568], noteLength: 0.06, tail: 0.15));
+
+  // Teddy picks up a honey jar: longer, rounder tune going up.
+  write('jar.wav', notes([523, 659, 784, 1047], noteLength: 0.09, tail: 0.25));
+
+  // Honey dropped on the ground: a sticky "bloop" going down.
+  write('honey.wav', sweep(from: 620, to: 180, seconds: 0.22, volume: 0.7));
+
+  // A monster slips in the honey: "whoooa" up and down, then a pop.
+  write('slip.wav', [
+    ...whoops(),
+    ...pop(),
+  ]);
+
+  // A monster catches Teddy: a bouncy "boing".
+  write('caught.wav', boing());
+
+  stdout.writeln('Sounds written to $outDir/');
+}
+
+List<double> notes(List<double> frequencies,
+    {required double noteLength, required double tail}) {
+  final out = <double>[];
+  for (var i = 0; i < frequencies.length; i++) {
+    final isLast = i == frequencies.length - 1;
+    final length = isLast ? noteLength + tail : noteLength;
+    final count = (length * sampleRate).round();
+    for (var n = 0; n < count; n++) {
+      final t = n / sampleRate;
+      final f = frequencies[i];
+      // A sine with a little octave on top sounds bright, like a toy bell.
+      final wave = sin(2 * pi * f * t) + 0.3 * sin(4 * pi * f * t);
+      out.add(0.5 * wave * envelope(n, count, attack: 0.005));
+    }
+  }
+  return out;
+}
+
+List<double> sweep(
+    {required double from,
+    required double to,
+    required double seconds,
+    double volume = 0.6}) {
+  final count = (seconds * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final progress = n / count;
+    final f = from + (to - from) * progress;
+    phase += 2 * pi * f / sampleRate;
+    out.add(volume * sin(phase) * envelope(n, count, attack: 0.01));
+  }
+  return out;
+}
+
+List<double> whoops() {
+  const seconds = 0.55;
+  final count = (seconds * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final p = n / count;
+    // Up then down, with a wobble.
+    final base = p < 0.4 ? 300 + 600 * (p / 0.4) : 900 - 700 * ((p - 0.4) / 0.6);
+    final f = base + 40 * sin(2 * pi * 9 * n / sampleRate);
+    phase += 2 * pi * f / sampleRate;
+    out.add(0.5 * sin(phase) * envelope(n, count, attack: 0.02));
+  }
+  return out;
+}
+
+List<double> pop() {
+  final random = Random(7);
+  final count = (0.09 * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final p = n / count;
+    final f = 1400 - 1000 * p;
+    phase += 2 * pi * f / sampleRate;
+    final noise = random.nextDouble() * 2 - 1;
+    out.add((0.5 * sin(phase) + 0.25 * noise) * pow(1 - p, 2));
+  }
+  return out;
+}
+
+List<double> boing() {
+  const seconds = 0.45;
+  final count = (seconds * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final t = n / sampleRate;
+    final p = n / count;
+    // Wobble that fades out, like a spring.
+    final f = 220 + 120 * sin(2 * pi * 14 * t) * (1 - p);
+    phase += 2 * pi * f / sampleRate;
+    out.add(0.6 * sin(phase) * envelope(n, count, attack: 0.005));
+  }
+  return out;
+}
+
+/// Fade in quickly, fade out smoothly, so there are no clicks.
+double envelope(int n, int count, {required double attack}) {
+  final attackSamples = max(1, (attack * sampleRate).round());
+  if (n < attackSamples) return n / attackSamples;
+  final p = (n - attackSamples) / max(1, count - attackSamples);
+  return pow(1 - p, 1.5).toDouble();
+}
+
+void write(String name, List<double> samples) {
+  final data = ByteData(44 + samples.length * 2);
+  void ascii(int offset, String s) {
+    for (var i = 0; i < s.length; i++) {
+      data.setUint8(offset + i, s.codeUnitAt(i));
+    }
+  }
+
+  ascii(0, 'RIFF');
+  data.setUint32(4, 36 + samples.length * 2, Endian.little);
+  ascii(8, 'WAVE');
+  ascii(12, 'fmt ');
+  data.setUint32(16, 16, Endian.little); // Chunk size.
+  data.setUint16(20, 1, Endian.little); // PCM.
+  data.setUint16(22, 1, Endian.little); // Mono.
+  data.setUint32(24, sampleRate, Endian.little);
+  data.setUint32(28, sampleRate * 2, Endian.little); // Bytes per second.
+  data.setUint16(32, 2, Endian.little); // Bytes per sample.
+  data.setUint16(34, 16, Endian.little); // Bits per sample.
+  ascii(36, 'data');
+  data.setUint32(40, samples.length * 2, Endian.little);
+  for (var i = 0; i < samples.length; i++) {
+    final s = (samples[i].clamp(-1.0, 1.0) * 32767).round();
+    data.setInt16(44 + i * 2, s, Endian.little);
+  }
+  File('$outDir/$name').writeAsBytesSync(data.buffer.asUint8List());
+}
