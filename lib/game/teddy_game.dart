@@ -337,7 +337,7 @@ class TeddyGame extends FlameGame {
         continue;
       }
 
-      if (!teddy.isSafe && _near(monster, _catchDistance)) {
+      if (monster.canCatch && !teddy.isSafe && _near(monster, _catchDistance)) {
         _caught(monster);
       }
     }

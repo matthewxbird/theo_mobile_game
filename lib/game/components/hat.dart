@@ -29,11 +29,12 @@ void paintHat(Canvas canvas, Offset brim, {double scale = 1}) {
   );
   canvas.drawRect(const Rect.fromLTWH(-15, -11, 30, 6), band);
   // A little gold star on the front.
-  canvas.drawPath(_starPath(const Offset(0, -20), 6), star);
+  canvas.drawPath(starPath(const Offset(0, -20), 6), star);
   canvas.restore();
 }
 
-Path _starPath(Offset centre, double radius) {
+/// A five-pointed star shape.
+Path starPath(Offset centre, double radius) {
   final path = Path();
   for (var i = 0; i < 10; i++) {
     final r = i.isEven ? radius : radius * 0.45;
@@ -63,7 +64,7 @@ class HatPickup extends Pickup {
       final a = _time * 2 + i * pi / 2;
       final twinkle = 3 + 2 * sin(_time * 8 + i);
       final spot = const Offset(28, 28) + Offset(cos(a) * 30, sin(a) * 22);
-      canvas.drawPath(_starPath(spot, twinkle), _sparkle);
+      canvas.drawPath(starPath(spot, twinkle), _sparkle);
     }
     paintHat(canvas, const Offset(28, 42));
   }

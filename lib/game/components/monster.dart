@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flutter/animation.dart';
 
 import '../rules.dart';
 import '../sfx.dart';
@@ -36,6 +37,18 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3
         ..strokeCap = StrokeCap.round;
+
+  static const _emergeTime = 0.7;
+  static const _closeDistance = 140.0;
+  static final _sting = Paint()..color = const Color(0xFFE53935);
+  static final _dizzy = Paint()..color = const Color(0xFFFFEB3B);
+  static final _dust = Paint();
+
+  final _random = Random();
+  double _emergeLeft = _emergeTime;
+  double _blinkIn = 1 + Random().nextDouble() * 3;
+  double _blink = 0;
+  Offset _look = Offset.zero;
 
   final Paint _body;
   double speed = 70;
@@ -78,7 +91,15 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
     Sfx.yikes.play();
   }
 
+  /// Can catch Teddy: chasing, and finished popping out of the ground.
+  bool get canCatch => isChasing && _emergeLeft <= 0;
+
   bool get _isHungry => secondsHungry > GameRules.hungerSeconds / 2;
+  bool get _isStarving => secondsHungry > GameRules.hungerSeconds;
+  bool get _isCloseToTeddy =>
+      isChasing &&
+      _emergeLeft <= 0 &&
+      position.distanceTo(game.teddy.position) < _closeDistance;
 
   /// Nom nom! Gobble a stolen lollipop and get fatter.
   void eat() {
@@ -143,6 +164,29 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
       return;
     }
 
+    // Eyes follow Teddy, and blink now and then.
+    final toTeddyNow = game.teddy.position - position;
+    final wantLook =
+        toTeddyNow.length2 > 0
+            ? Offset(toTeddyNow.normalized().x, toTeddyNow.normalized().y)
+            : Offset.zero;
+    _look = Offset.lerp(_look, wantLook, min(1, dt * 6))!;
+    if (_blink > 0) {
+      _blink -= dt;
+    } else {
+      _blinkIn -= dt;
+      if (_blinkIn <= 0) {
+        _blink = 0.15;
+        _blinkIn = 2 + _random.nextDouble() * 3;
+      }
+    }
+
+    // Popping out of the ground: stand still until fully out.
+    if (_emergeLeft > 0) {
+      _emergeLeft -= dt;
+      return;
+    }
+
     fatness = max(0, fatness - dt / GameRules.fatWearOffSeconds);
     secondsHungry += dt;
     if (_munchLeft > 0) _munchLeft -= dt;
@@ -182,32 +226,82 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
   }
 
   void _draw(Canvas canvas) {
+    final close = _isCloseToTeddy;
+    final gloating = _bounceLeft > 0;
+
+    // Popping up out of the ground in a puff of dust.
+    var emerge = 1.0;
+    if (_emergeLeft > 0) {
+      final p = 1 - _emergeLeft / _emergeTime;
+      _drawDust(canvas, p);
+      emerge = Curves.elasticOut.transform(p);
+    }
+
     canvas.save();
-    // Squishy walk: slow and wobbly when fat, quick and jittery when hungry.
-    final wobbleSpeed = 10 / (1 + 0.5 * fatness) * (_isHungry ? 1.8 : 1);
-    final squish =
-        isChasing || _blinded
-            ? sin(_time * (_blinded ? 30 : wobbleSpeed)) * 0.06
-            : 0.0;
+    // Squishy walk: slow and wobbly when fat, quick and jittery when hungry,
+    // frantic when close to Teddy or running away blind.
+    final wobbleSpeed =
+        _blinded
+            ? 30.0
+            : 10 /
+                (1 + 0.5 * fatness) *
+                (_isHungry ? 1.8 : 1) *
+                (close ? 1.6 : 1);
+    final walking = isChasing || _blinded;
+    final walkCycle = sin(_time * wobbleSpeed);
+    final squish = walking ? walkCycle * 0.06 : 0.0;
+    // Fat monsters waddle side to side; close ones lean in for the grab.
+    final waddle =
+        isChasing ? sin(_time * wobbleSpeed / 2) * 0.04 * (1 + fatness) : 0.0;
+    final lean = close ? _look.dx.sign * 0.14 : 0.0;
+    // A starving monster's tummy rumbles and shakes it.
+    final rumble =
+        _isStarving && isChasing ? (_random.nextDouble() - 0.5) * 3 : 0.0;
     // Fat monsters get wider (and a bit taller), growing from their feet.
     final wide = 1 + 0.28 * fatness;
     final tall = 1 + 0.12 * fatness;
-    canvas.translate(32, 64);
-    canvas.scale(wide * (1 - squish), tall * (1 + squish));
+    canvas.translate(32 + rumble, 64);
+    canvas.rotate(waddle + lean);
+    canvas.scale(wide * (1 - squish) * emerge, tall * (1 + squish) * emerge);
     canvas.translate(-32, -64);
 
-    // Feet and body.
-    canvas.drawOval(Rect.fromLTWH(12, 52, 16, 10), _body);
-    canvas.drawOval(Rect.fromLTWH(36, 52, 16, 10), _body);
+    // Feet take turns stepping, then the body.
+    final double stepL = walking ? 3 * max(0.0, walkCycle) : 0.0;
+    final double stepR = walking ? 3 * max(0.0, -walkCycle) : 0.0;
+    canvas.drawOval(Rect.fromLTWH(12, 52 - stepL, 16, 10), _body);
+    canvas.drawOval(Rect.fromLTWH(36, 52 - stepR, 16, 10), _body);
     canvas.drawCircle(const Offset(32, 34), 26, _body);
-    // Eyes.
-    canvas.drawCircle(const Offset(23, 31), 7, _white);
-    canvas.drawCircle(const Offset(41, 31), 7, _white);
-    canvas.drawCircle(const Offset(23, 33), 3.5, _dark);
-    canvas.drawCircle(const Offset(41, 33), 3.5, _dark);
-    // Grumpy eyebrows.
-    canvas.drawLine(const Offset(14, 19), const Offset(28, 24), _brow);
-    canvas.drawLine(const Offset(50, 19), const Offset(36, 24), _brow);
+
+    // Stung: little red bumps.
+    if (_fading) {
+      for (final bump in const [
+        Offset(14, 40),
+        Offset(48, 22),
+        Offset(44, 50),
+      ]) {
+        canvas.drawCircle(bump, 3.5, _sting);
+      }
+    }
+
+    _drawEyes(canvas, close: close, gloating: gloating);
+
+    // Eyebrows: grumpy, or extra fierce up close.
+    if (close && !_blinded) {
+      canvas.drawLine(const Offset(13, 16), const Offset(28, 25), _brow);
+      canvas.drawLine(const Offset(51, 16), const Offset(36, 25), _brow);
+    } else {
+      canvas.drawLine(const Offset(14, 19), const Offset(28, 24), _brow);
+      canvas.drawLine(const Offset(50, 19), const Offset(36, 24), _brow);
+    }
+
+    if (_slipping) {
+      // Dizzy stars circle its head.
+      for (var i = 0; i < 3; i++) {
+        final a = _slipTime * 8 + i * 2 * pi / 3;
+        final spot = const Offset(32, 6) + Offset(cos(a) * 20, sin(a) * 6);
+        canvas.drawPath(starPath(spot, 5), _dizzy);
+      }
+    }
 
     if (_blinded) {
       // A wobbly "Oh no!" mouth, and Teddy's hat pulled down over its eyes.
@@ -227,6 +321,33 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
         ),
         _dark,
       );
+    } else if (gloating) {
+      // A smug, toothy grin after catching Teddy.
+      canvas.drawArc(
+        Rect.fromCenter(center: const Offset(32, 44), width: 22, height: 14),
+        0,
+        pi,
+        true,
+        _dark,
+      );
+      canvas.drawRect(const Rect.fromLTWH(24, 44, 16, 3), _white);
+    } else if (close) {
+      // Mouth wide open, teeth showing: "Raaah!"
+      final open = 10 + 3 * sin(_time * 12);
+      canvas.drawOval(
+        Rect.fromCenter(center: const Offset(32, 48), width: 20, height: open),
+        _dark,
+      );
+      for (final x in const [25.0, 32.0, 39.0]) {
+        canvas.drawPath(
+          Path()
+            ..moveTo(x - 3, 48 - open / 2)
+            ..lineTo(x + 3, 48 - open / 2)
+            ..lineTo(x, 48 - open / 2 + 4)
+            ..close(),
+          _white,
+        );
+      }
     } else {
       canvas.drawArc(
         Rect.fromCenter(center: const Offset(32, 48), width: 14, height: 8),
@@ -243,5 +364,62 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
     }
 
     canvas.restore();
+  }
+
+  void _drawEyes(Canvas canvas, {required bool close, required bool gloating}) {
+    final eyeSize = close ? 8.5 : 7.0;
+    for (final eye in const [Offset(23, 31), Offset(41, 31)]) {
+      if (_slipping) {
+        // Dizzy X eyes.
+        canvas.drawLine(
+          eye - const Offset(4, 4),
+          eye + const Offset(4, 4),
+          _frown,
+        );
+        canvas.drawLine(
+          eye + const Offset(-4, 4),
+          eye + const Offset(4, -4),
+          _frown,
+        );
+      } else if (gloating) {
+        // Smug squinty eyes.
+        canvas.drawArc(
+          Rect.fromCenter(
+            center: eye + const Offset(0, 2),
+            width: 10,
+            height: 7,
+          ),
+          pi + 0.2,
+          pi - 0.4,
+          false,
+          _frown,
+        );
+      } else if (_blink > 0) {
+        canvas.drawLine(
+          eye - const Offset(6, 0),
+          eye + const Offset(6, 0),
+          _frown,
+        );
+      } else {
+        canvas.drawCircle(eye, eyeSize, _white);
+        // Pupils watch Teddy.
+        canvas.drawCircle(
+          eye + Offset(_look.dx * 2.5, _look.dy * 2.5),
+          close ? 3 : 3.5,
+          _dark,
+        );
+      }
+    }
+  }
+
+  /// A puff of dust where the monster pops out of the ground.
+  void _drawDust(Canvas canvas, double p) {
+    _dust.color = Color.fromRGBO(255, 255, 255, 0.7 * (1 - p));
+    for (var i = 0; i < 6; i++) {
+      final a = i * pi / 3;
+      final spot =
+          const Offset(32, 58) + Offset(cos(a) * 30 * p, sin(a) * 10 * p);
+      canvas.drawCircle(spot, 6 + 6 * p, _dust);
+    }
   }
 }
