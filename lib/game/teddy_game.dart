@@ -153,7 +153,7 @@ class TeddyGame extends FlameGame {
     final target = nearestMonsterTo(teddy.position);
     // Nobody to throw at: keep the hat on.
     if (target == null) return;
-    teddy.hasHat = false;
+    teddy.throwHat();
     add(ThrownHat(position: teddy.position - Vector2(0, 30), target: target));
     Sfx.whoosh.play();
     HapticFeedback.mediumImpact();
@@ -262,6 +262,7 @@ class TeddyGame extends FlameGame {
       if (sweet.collected || !_near(sweet, _pickupDistance)) continue;
       sweet.collect();
       score.value++;
+      teddy.celebrate();
       Sfx.sweet.play();
       HapticFeedback.selectionClick();
       if (score.value >= sweetsNeeded) {
@@ -288,6 +289,7 @@ class TeddyGame extends FlameGame {
     for (final jar in children.whereType<HoneyJar>().toList()) {
       if (jar.collected || !_near(jar, _pickupDistance)) continue;
       jar.collect();
+      teddy.celebrate();
       honey.value++;
       Sfx.jar.play();
       HapticFeedback.selectionClick();
