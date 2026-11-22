@@ -13,6 +13,9 @@ import 'components/sweet.dart';
 import 'components/teddy.dart';
 import 'rules.dart';
 import 'sfx.dart';
+import 'teddy_colour.dart';
+
+enum GamePhase { menu, ready, playing, levelComplete }
 
 /// Teddy runs around collecting sweets while grumpy monsters chase him.
 class TeddyGame extends FlameGame {
@@ -42,13 +45,54 @@ class TeddyGame extends FlameGame {
   /// Beehives to use. You get one each time you finish a level.
   final beehives = ValueNotifier<int>(0);
 
-  /// True while the "Level up!" banner is showing.
-  final celebrating = ValueNotifier<bool>(false);
+  /// Which screen we're on. Monsters only move while [GamePhase.playing].
+  final phase = ValueNotifier<GamePhase>(GamePhase.menu);
 
   late final Teddy teddy;
   double _monsterTimer = GameRules.firstMonsterDelay;
   double _honeyJarTimer = GameRules.honeyJarInterval;
-  double _celebrationLeft = 0;
+
+  bool get isPlaying => phase.value == GamePhase.playing;
+  TeddyColour get colour => teddy.colour;
+
+  /// Start a new game from level 1 with the chosen teddy.
+  void startNewGame(TeddyColour colour) {
+    if (!isLoaded) return;
+    teddy.colour = colour;
+    level.value = 1;
+    score.value = 0;
+    honey.value = GameRules.startingHoney;
+    beehives.value = 0;
+    _clearBoard();
+    phase.value = GamePhase.ready;
+  }
+
+  /// From the level complete screen: get ready for the next level.
+  void nextLevel() {
+    _clearBoard();
+    phase.value = GamePhase.ready;
+  }
+
+  /// The "3, 2, 1, Go!" countdown has finished.
+  void go() {
+    _monsterTimer = GameRules.firstMonsterDelay;
+    phase.value = GamePhase.playing;
+  }
+
+  void backToMenu() {
+    _clearBoard();
+    phase.value = GamePhase.menu;
+  }
+
+  void _clearBoard() {
+    for (final c in children.where((c) => c is Monster || c is Bee).toList()) {
+      c.removeFromParent();
+    }
+    for (final c in children.whereType<HoneyPuddle>().toList()) {
+      c.removeFromParent();
+    }
+    teddy.resetTo(size / 2);
+  }
 
   int get sweetsNeeded => GameRules.sweetsForLevel(level.value);
 
@@ -71,7 +115,13 @@ class TeddyGame extends FlameGame {
   Future<void> onLoad() async {
     await Sfx.load();
     teddy = Teddy(position: size / 2);
-    add(Playground(onTap: (point) => teddy.moveTo(clampToField(point))));
+    add(
+      Playground(
+        onTap: (point) {
+          if (isPlaying) teddy.moveTo(clampToField(point));
+        },
+      ),
+    );
     add(teddy);
     for (var i = 0; i < GameRules.sweetsOnScreen; i++) {
       _spawnSweet();
@@ -80,7 +130,7 @@ class TeddyGame extends FlameGame {
 
   /// Called by the honey button.
   void dropHoney() {
-    if (honey.value == 0) return;
+    if (!isPlaying || honey.value == 0) return;
     honey.value--;
     add(HoneyPuddle(position: teddy.position.clone()));
     Sfx.honey.play();
@@ -89,7 +139,7 @@ class TeddyGame extends FlameGame {
 
   /// Called by the beehive button: send bees to sting every monster.
   void useBeehive() {
-    if (beehives.value == 0) return;
+    if (!isPlaying || beehives.value == 0) return;
     final targets =
         children.whereType<Monster>().where((m) => m.isChasing).toList();
     // Don't waste a beehive when there's nobody to sting.
@@ -113,31 +163,24 @@ class TeddyGame extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
+    if (!isPlaying) return;
     _collectPickups();
+    if (!isPlaying) return;
     _updateMonsters();
-    _updateCelebration(dt);
-    if (!celebrating.value) _spawnMonsters(dt);
+    _spawnMonsters(dt);
     _spawnHoneyJars(dt);
   }
 
-  void _levelUp() {
+  void _levelComplete() {
     level.value++;
     score.value = 0;
     beehives.value += GameRules.beehivesPerLevelUp;
     for (final monster in children.whereType<Monster>()) {
       monster.flashAndFade();
     }
-    _celebrationLeft = GameRules.levelUpCelebrationSeconds;
-    celebrating.value = true;
-    _monsterTimer = GameRules.firstMonsterDelay;
+    phase.value = GamePhase.levelComplete;
     Sfx.levelUp.play();
     HapticFeedback.heavyImpact();
-  }
-
-  void _updateCelebration(double dt) {
-    if (!celebrating.value) return;
-    _celebrationLeft -= dt;
-    if (_celebrationLeft <= 0) celebrating.value = false;
   }
 
   void _collectPickups() {
@@ -147,7 +190,10 @@ class TeddyGame extends FlameGame {
       score.value++;
       Sfx.sweet.play();
       HapticFeedback.selectionClick();
-      if (score.value >= sweetsNeeded) _levelUp();
+      if (score.value >= sweetsNeeded) {
+        _levelComplete();
+        return;
+      }
     }
     final sweetsLeft =
         children.whereType<Sweet>().where((s) => !s.collected).length;

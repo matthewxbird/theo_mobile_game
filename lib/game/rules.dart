@@ -13,7 +13,6 @@ class GameRules {
   static const safeSecondsAfterCatch = 2.0;
 
   static const beehivesPerLevelUp = 1;
-  static const levelUpCelebrationSeconds = 2.5;
 
   static const maxMonsters = 3;
   static const firstMonsterDelay = 3.0;

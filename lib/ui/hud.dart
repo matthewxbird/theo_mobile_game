@@ -77,59 +77,6 @@ class LevelBadge extends StatelessWidget {
   }
 }
 
-/// Big bouncy "Level 2!" in the middle of the screen.
-class LevelUpBanner extends StatelessWidget {
-  const LevelUpBanner({
-    super.key,
-    required this.showing,
-    required this.level,
-  });
-
-  final ValueListenable<bool> showing;
-  final ValueListenable<int> level;
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: showing,
-      builder: (context, isShowing, _) {
-        if (!isShowing) return const SizedBox.shrink();
-        return Center(
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: 1),
-            duration: const Duration(milliseconds: 700),
-            curve: Curves.elasticOut,
-            builder: (context, scale, child) =>
-                Transform.scale(scale: scale, child: child),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xEEFFFFFF),
-                borderRadius: BorderRadius.circular(36),
-                border: Border.all(color: const Color(0xFFFFC107), width: 6),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('⭐ ⭐ ⭐', style: TextStyle(fontSize: 48)),
-                  Text(
-                    'Level ${level.value}!',
-                    style: const TextStyle(
-                      fontSize: 56,
-                      fontWeight: FontWeight.w900,
-                      color: _brown,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
 /// Big round bonus button (honey, beehive). Shows how many are left.
 class BonusButton extends StatelessWidget {
   const BonusButton({
