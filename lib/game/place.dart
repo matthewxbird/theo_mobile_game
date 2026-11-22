@@ -17,7 +17,7 @@ enum Place {
   /// The colour of the floor.
   final Color ground;
 
-  /// Meadow for levels 1-3, beach for 4-6, snow for 7-9, night for 10-12,
+  /// Meadow, beach, snow, night, one after another as the levels go up,
   /// then round again.
   static Place forLevel(int level) =>
       values[((level - 1) ~/ GameRules.levelsPerPlace) % values.length];

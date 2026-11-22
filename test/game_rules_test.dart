@@ -15,13 +15,15 @@ void main() {
       expect(GameRules.sweetsForLevel(50), GameRules.maxSweetsPerLevel);
     });
 
-    test('the place changes every 3 levels and goes round', () {
+    test('every level is a different place from the last', () {
       expect(Place.forLevel(1), Place.meadow);
-      expect(Place.forLevel(3), Place.meadow);
-      expect(Place.forLevel(4), Place.beach);
-      expect(Place.forLevel(7), Place.snow);
-      expect(Place.forLevel(10), Place.night);
-      expect(Place.forLevel(13), Place.meadow);
+      expect(Place.forLevel(2), Place.beach);
+      expect(Place.forLevel(3), Place.snow);
+      expect(Place.forLevel(4), Place.night);
+      expect(Place.forLevel(5), Place.meadow);
+      for (var level = 1; level < 50; level++) {
+        expect(Place.forLevel(level), isNot(Place.forLevel(level + 1)));
+      }
     });
 
     test('one more monster each level, never more than the max', () {
