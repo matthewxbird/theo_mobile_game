@@ -76,7 +76,11 @@ class _TeddyAppState extends State<TeddyApp> {
                   GamePhase.ready => Stack(
                     children: [
                       _hud(),
-                      GetReady(level: _game.level.value, onDone: _game.go),
+                      GetReady(
+                        level: _game.level.value,
+                        place: _game.place,
+                        onDone: _game.go,
+                      ),
                     ],
                   ),
                   GamePhase.playing => _hud(),

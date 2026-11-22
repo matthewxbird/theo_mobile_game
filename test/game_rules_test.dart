@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:theo_mobile_game/game/place.dart';
 import 'package:theo_mobile_game/game/rules.dart';
@@ -15,15 +17,26 @@ void main() {
       expect(GameRules.sweetsForLevel(50), GameRules.maxSweetsPerLevel);
     });
 
-    test('every level is a different place from the last', () {
-      expect(Place.forLevel(1), Place.meadow);
-      expect(Place.forLevel(2), Place.beach);
-      expect(Place.forLevel(3), Place.snow);
-      expect(Place.forLevel(4), Place.night);
-      expect(Place.forLevel(5), Place.meadow);
-      for (var level = 1; level < 50; level++) {
-        expect(Place.forLevel(level), isNot(Place.forLevel(level + 1)));
+    test('places are random but never the same twice in a row', () {
+      final random = Random(42);
+      var place = Place.randomAfter(null, random);
+      final seen = <Place>{place};
+      final orders = <String>{};
+      var order = place.name;
+      for (var level = 2; level <= 200; level++) {
+        final next = Place.randomAfter(place, random);
+        expect(next, isNot(place));
+        seen.add(next);
+        order += ',${next.name}';
+        if (level % 4 == 0) {
+          orders.add(order);
+          order = '';
+        }
+        place = next;
       }
+      // Every place turns up, and they don't just repeat one fixed order.
+      expect(seen, Place.values.toSet());
+      expect(orders.length, greaterThan(1));
     });
 
     test('one more monster each level, never more than the max', () {
@@ -42,11 +55,8 @@ void main() {
     });
 
     test('fat monsters are slower and hungry monsters are faster', () {
-      double speed({double fat = 0, double hungry = 0}) => GameRules.monsterSpeed(
-            level: 1,
-            fatness: fat,
-            secondsHungry: hungry,
-          );
+      double speed({double fat = 0, double hungry = 0}) =>
+          GameRules.monsterSpeed(level: 1, fatness: fat, secondsHungry: hungry);
       expect(speed(fat: 1), lessThan(speed()));
       expect(speed(fat: 3), lessThan(speed(fat: 1)));
       expect(speed(hungry: 20), greaterThan(speed()));
@@ -56,11 +66,7 @@ void main() {
     test('even the hungriest monster is slower than Teddy', () {
       for (var level = 1; level <= 100; level++) {
         expect(
-          GameRules.monsterSpeed(
-            level: level,
-            fatness: 0,
-            secondsHungry: 1000,
-          ),
+          GameRules.monsterSpeed(level: level, fatness: 0, secondsHungry: 1000),
           lessThan(GameRules.teddySpeed),
         );
       }

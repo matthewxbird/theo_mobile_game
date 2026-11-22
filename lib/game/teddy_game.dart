@@ -81,8 +81,9 @@ class TeddyGame extends FlameGame {
 
   bool get isPlaying => phase.value == GamePhase.playing;
 
-  /// Where Teddy is playing on this level.
-  Place get place => Place.forLevel(level.value);
+  /// Where Teddy is playing on this level. A random new place each level,
+  /// never the same as the one before.
+  Place place = Place.meadow;
   TeddyColour get colour => teddy.colour;
 
   /// Start a new game from level 1 with the chosen teddy.
@@ -101,12 +102,15 @@ class TeddyGame extends FlameGame {
       hat.removeFromParent();
     }
     _hatTimer = GameRules.hatInterval;
+    place = Place.randomAfter(null, _random);
     phase.value = GamePhase.ready;
   }
 
-  /// From the level complete screen: get ready for the next level.
+  /// From the level complete screen: get ready for the next level,
+  /// somewhere new.
   void nextLevel() {
     _clearBoard();
+    place = Place.randomAfter(place, _random);
     phase.value = GamePhase.ready;
   }
 

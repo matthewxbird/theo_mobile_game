@@ -1,8 +1,7 @@
+import 'dart:math';
 import 'dart:ui';
 
-import 'rules.dart';
-
-/// Where Teddy is playing. It changes every few levels.
+/// Where Teddy is playing. Each level is a surprise new place.
 enum Place {
   meadow('🌼', Color(0xFFB7E4A0)),
   beach('🏖️', Color(0xFFF6E3B4)),
@@ -17,8 +16,10 @@ enum Place {
   /// The colour of the floor.
   final Color ground;
 
-  /// Meadow, beach, snow, night, one after another as the levels go up,
-  /// then round again.
-  static Place forLevel(int level) =>
-      values[((level - 1) ~/ GameRules.levelsPerPlace) % values.length];
+  /// A surprise place for the next level: random, but never the same as
+  /// [previous], so every level looks different from the last.
+  static Place randomAfter(Place? previous, Random random) {
+    final choices = values.where((p) => p != previous).toList();
+    return choices[random.nextInt(choices.length)];
+  }
 }

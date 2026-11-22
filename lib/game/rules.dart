@@ -43,10 +43,6 @@ class GameRules {
       min(maxSweetsPerLevel, 6 + 2 * (level - 1));
   static const maxSweetsPerLevel = 16;
 
-  /// The playground changes to a new place every this many levels
-  /// (every level, so no two levels in a row look the same).
-  static const levelsPerPlace = 1;
-
   /// One monster on level 1, one more each level, up to the max.
   static int monstersFor(int level) => min(maxMonsters, level);
 

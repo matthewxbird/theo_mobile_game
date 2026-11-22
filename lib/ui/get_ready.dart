@@ -8,7 +8,15 @@ import 'fun_widgets.dart';
 
 /// "Level 2 ... 3, 2, 1, Go!" before every level.
 class GetReady extends StatefulWidget {
-  const GetReady({super.key, required this.level, required this.onDone});
+  const GetReady({
+    super.key,
+    required this.level,
+    required this.place,
+    required this.onDone,
+  });
+
+  /// Where this level is, shown as an emoji.
+  final Place place;
 
   final int level;
   final VoidCallback onDone;
@@ -64,7 +72,7 @@ class _GetReadyState extends State<GetReady> {
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Text(
-                '${Place.forLevel(widget.level).emoji} Level ${widget.level}',
+                '${widget.place.emoji} Level ${widget.level}',
                 style: const TextStyle(
                   fontSize: 44,
                   fontWeight: FontWeight.w900,
