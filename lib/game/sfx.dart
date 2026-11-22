@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 
+import 'teddy_colour.dart';
+
 /// The game's sound effects. Files live in assets/audio/ and are made by
 /// tool/generate_sounds.dart.
 enum Sfx {
@@ -21,7 +23,18 @@ enum Sfx {
   magic('magic.wav'),
   tada('tada.wav'),
   whoosh('whoosh.wav'),
-  yikes('yikes.wav');
+  yikes('yikes.wav'),
+  cheep('cheep.wav'),
+  rawr('rawr.wav'),
+  woof('woof.wav');
+
+  /// The sound of this critter's helpers setting off.
+  static Sfx swarmFor(Critter critter) => switch (critter) {
+    Critter.bear => buzz,
+    Critter.dino => rawr,
+    Critter.chicken => cheep,
+    Critter.dog => woof,
+  };
 
   const Sfx(this.file);
 

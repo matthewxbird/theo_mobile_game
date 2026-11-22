@@ -20,10 +20,7 @@ void main() {
   write('honey.wav', sweep(from: 620, to: 180, seconds: 0.22, volume: 0.7));
 
   // A monster slips in the honey: "whoooa" up and down, then a pop.
-  write('slip.wav', [
-    ...whoops(),
-    ...pop(),
-  ]);
+  write('slip.wav', [...whoops(), ...pop()]);
 
   // A monster catches Teddy: a bouncy "boing".
   write('caught.wav', boing());
@@ -68,6 +65,15 @@ void main() {
   // A monster gets a hat over its eyes: "yikes!" wobbling up and away.
   write('yikes.wav', yikes());
 
+  // Chicks on the way: "cheep cheep cheep".
+  write('cheep.wav', cheeps());
+
+  // Baby dinos on the way: a little "rawr!"
+  write('rawr.wav', rawr());
+
+  // Puppies on the way: "woof woof!"
+  write('woof.wav', woofs());
+
   // A monster eats a stolen lollipop: "nom nom nom".
   write('munch.wav', munch());
 
@@ -102,6 +108,54 @@ List<double> yikes() {
     final f = 700 + 500 * p + 120 * sin(2 * pi * 16 * t);
     phase += 2 * pi * f / sampleRate;
     out.add(0.45 * sin(phase) * envelope(n, count, attack: 0.01));
+  }
+  return out;
+}
+
+List<double> cheeps() => [
+  for (var i = 0; i < 3; i++) ...[
+    ...sweep(from: 2200, to: 3200, seconds: 0.07, volume: 0.4),
+    ...List.filled((0.06 * sampleRate).round(), 0.0),
+  ],
+];
+
+List<double> rawr() {
+  final random = Random(5);
+  const seconds = 0.55;
+  final count = (seconds * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final p = n / count;
+    // Rises then falls, with a growly wobble and a bit of gravel.
+    final f = 180 + 160 * sin(p * pi) + 25 * sin(2 * pi * 30 * n / sampleRate);
+    phase += f / sampleRate;
+    final saw = 2 * (phase - phase.floor()) - 1;
+    final gravel = (random.nextDouble() * 2 - 1) * 0.2;
+    out.add(0.45 * (saw + gravel) * envelope(n, count, attack: 0.05));
+  }
+  return out;
+}
+
+List<double> woofs() => [
+  for (var i = 0; i < 2; i++) ...[
+    ...woof(),
+    ...List.filled((0.08 * sampleRate).round(), 0.0),
+  ],
+];
+
+List<double> woof() {
+  final random = Random(9);
+  final count = (0.16 * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final p = n / count;
+    final f = 420 - 220 * p;
+    phase += f / sampleRate;
+    final saw = 2 * (phase - phase.floor()) - 1;
+    final breath = (random.nextDouble() * 2 - 1) * 0.25;
+    out.add(0.5 * (saw + breath) * envelope(n, count, attack: 0.01));
   }
   return out;
 }
@@ -141,8 +195,11 @@ List<double> buzz() {
   return out;
 }
 
-List<double> notes(List<double> frequencies,
-    {required double noteLength, required double tail}) {
+List<double> notes(
+  List<double> frequencies, {
+  required double noteLength,
+  required double tail,
+}) {
   final out = <double>[];
   for (var i = 0; i < frequencies.length; i++) {
     final isLast = i == frequencies.length - 1;
@@ -159,11 +216,12 @@ List<double> notes(List<double> frequencies,
   return out;
 }
 
-List<double> sweep(
-    {required double from,
-    required double to,
-    required double seconds,
-    double volume = 0.6}) {
+List<double> sweep({
+  required double from,
+  required double to,
+  required double seconds,
+  double volume = 0.6,
+}) {
   final count = (seconds * sampleRate).round();
   final out = <double>[];
   var phase = 0.0;
@@ -184,7 +242,8 @@ List<double> whoops() {
   for (var n = 0; n < count; n++) {
     final p = n / count;
     // Up then down, with a wobble.
-    final base = p < 0.4 ? 300 + 600 * (p / 0.4) : 900 - 700 * ((p - 0.4) / 0.6);
+    final base =
+        p < 0.4 ? 300 + 600 * (p / 0.4) : 900 - 700 * ((p - 0.4) / 0.6);
     final f = base + 40 * sin(2 * pi * 9 * n / sampleRate);
     phase += 2 * pi * f / sampleRate;
     out.add(0.5 * sin(phase) * envelope(n, count, attack: 0.02));

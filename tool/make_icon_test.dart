@@ -32,14 +32,14 @@ Future<void> _drawIcon(String path, {required bool withBackground}) async {
     // A few flowers in the grass.
     final petal = Paint()..color = const Color(0xFFFFFFFF);
     final middle = Paint()..color = const Color(0xFFFFD54F);
-    for (final c in const [Offset(150, 860), Offset(880, 900), Offset(820, 760)]) {
+    for (final c in const [
+      Offset(150, 860),
+      Offset(880, 900),
+      Offset(820, 760),
+    ]) {
       for (var i = 0; i < 5; i++) {
         final a = i * 2 * pi / 5;
-        canvas.drawCircle(
-          c + Offset(28 * cos(a), 28 * sin(a)),
-          22,
-          petal,
-        );
+        canvas.drawCircle(c + Offset(28 * cos(a), 28 * sin(a)), 22, petal);
       }
       canvas.drawCircle(c, 18, middle);
     }
@@ -51,12 +51,7 @@ Future<void> _drawIcon(String path, {required bool withBackground}) async {
   // Teddy plus hat spans y = -17 .. 77 in his own 76-wide box.
   canvas.translate(_size / 2 - 38 * scale, _size / 2 - 30 * scale);
   canvas.scale(scale);
-  paintTeddy(
-    canvas,
-    TeddyColour.brown.fur,
-    face: TeddyFace.happy,
-    arms: 1,
-  );
+  paintTeddy(canvas, TeddyColour.brown.fur, face: TeddyFace.happy, arms: 1);
   paintHat(canvas, const Offset(38, 10), scale: 0.9);
   // A lollipop held up in his right paw.
   canvas.save();
