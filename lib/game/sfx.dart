@@ -18,7 +18,10 @@ enum Sfx {
   go('go.wav'),
   tap('tap.wav'),
   munch('munch.wav'),
-  magic('magic.wav');
+  magic('magic.wav'),
+  tada('tada.wav'),
+  whoosh('whoosh.wav'),
+  yikes('yikes.wav');
 
   const Sfx(this.file);
 

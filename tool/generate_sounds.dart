@@ -59,10 +59,51 @@ void main() {
     ),
   );
 
+  // Teddy puts on a hat: "ta-da!"
+  write('tada.wav', notes([784, 1175], noteLength: 0.1, tail: 0.4));
+
+  // Teddy throws his hat: a quick rising whoosh.
+  write('whoosh.wav', whoosh());
+
+  // A monster gets a hat over its eyes: "yikes!" wobbling up and away.
+  write('yikes.wav', yikes());
+
   // A monster eats a stolen lollipop: "nom nom nom".
   write('munch.wav', munch());
 
   stdout.writeln('Sounds written to $outDir/');
+}
+
+List<double> whoosh() {
+  final random = Random(11);
+  final count = (0.3 * sampleRate).round();
+  final out = <double>[];
+  var smooth = 0.0;
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final p = n / count;
+    // Smoothed noise sounds like air rushing past.
+    smooth += ((random.nextDouble() * 2 - 1) - smooth) * (0.05 + 0.4 * p);
+    phase += 2 * pi * (300 + 900 * p) / sampleRate;
+    final loudness = sin(p * pi);
+    out.add((0.8 * smooth + 0.15 * sin(phase)) * loudness);
+  }
+  return out;
+}
+
+List<double> yikes() {
+  const seconds = 0.5;
+  final count = (seconds * sampleRate).round();
+  final out = <double>[];
+  var phase = 0.0;
+  for (var n = 0; n < count; n++) {
+    final t = n / sampleRate;
+    final p = n / count;
+    final f = 700 + 500 * p + 120 * sin(2 * pi * 16 * t);
+    phase += 2 * pi * f / sampleRate;
+    out.add(0.45 * sin(phase) * envelope(n, count, attack: 0.01));
+  }
+  return out;
 }
 
 List<double> munch() {
