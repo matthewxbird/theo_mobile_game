@@ -9,6 +9,7 @@ import 'components/bee.dart';
 import 'components/honey.dart';
 import 'components/monster.dart';
 import 'components/playground.dart';
+import 'components/stolen_lolly.dart';
 import 'components/sweet.dart';
 import 'components/teddy.dart';
 import 'rules.dart';
@@ -38,6 +39,7 @@ class TeddyGame extends FlameGame {
   ];
 
   final Random _random;
+
   /// Lollipops collected on this level.
   final score = ValueNotifier<int>(0);
   final level = ValueNotifier<int>(1);
@@ -86,7 +88,10 @@ class TeddyGame extends FlameGame {
   }
 
   void _clearBoard() {
-    for (final c in children.where((c) => c is Monster || c is Bee).toList()) {
+    for (final c
+        in children
+            .where((c) => c is Monster || c is Bee || c is StolenLolly)
+            .toList()) {
       c.removeFromParent();
     }
     for (final c in children.whereType<HoneyPuddle>().toList()) {
@@ -101,16 +106,16 @@ class TeddyGame extends FlameGame {
   Color backgroundColor() => const Color(0xFFB7E4A0);
 
   Rect get field => Rect.fromLTRB(
-        edgeMargin,
-        hudHeight,
-        max(edgeMargin, size.x - edgeMargin),
-        max(hudHeight, size.y - edgeMargin),
-      );
+    edgeMargin,
+    hudHeight,
+    max(edgeMargin, size.x - edgeMargin),
+    max(hudHeight, size.y - edgeMargin),
+  );
 
   Vector2 clampToField(Vector2 point) => Vector2(
-        point.x.clamp(field.left, field.right),
-        point.y.clamp(field.top, field.bottom),
-      );
+    point.x.clamp(field.left, field.right),
+    point.y.clamp(field.top, field.bottom),
+  );
 
   @override
   Future<void> onLoad() async {
@@ -212,13 +217,18 @@ class TeddyGame extends FlameGame {
   }
 
   void _updateMonsters() {
-    final speed = GameRules.monsterSpeedFor(level.value);
     final puddles = children.whereType<HoneyPuddle>().toList();
     for (final monster in children.whereType<Monster>().toList()) {
       if (!monster.isChasing) continue;
-      monster.speed = speed;
+      monster.speed = GameRules.monsterSpeed(
+        level: level.value,
+        fatness: monster.fatness,
+        secondsHungry: monster.secondsHungry,
+      );
 
-      final puddle = puddles.where((p) => !p.used).firstWhereOrNull(
+      final puddle = puddles
+          .where((p) => !p.used)
+          .firstWhereOrNull(
             (p) => p.position.distanceTo(monster.position) < _honeyDistance,
           );
       if (puddle != null) {
@@ -235,7 +245,18 @@ class TeddyGame extends FlameGame {
   }
 
   void _caught(Monster monster) {
-    score.value -= GameRules.sweetsLostWhenCaught(score.value);
+    final stolen = GameRules.sweetsLostWhenCaught(score.value);
+    score.value -= stolen;
+    // The monster snatches the lollipop and eats it. It's gone for good.
+    for (var i = 0; i < stolen; i++) {
+      add(
+        StolenLolly(
+          position: teddy.position.clone(),
+          monster: monster,
+          color: Sweet.colors[_random.nextInt(Sweet.colors.length)],
+        ),
+      );
+    }
     teddy.makeSafe();
     monster.bounceAwayFrom(teddy.position);
     Sfx.caught.play();
