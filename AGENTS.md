@@ -11,6 +11,7 @@ These three rules MUST always be followed:
 - "Teddy's Sweet Run": a Flutter + Flame game for a 4-year-old, targets Android and iOS. Requirements: `docs/REQUIREMENTS.md`.
 - `lib/main.dart`: app shell; Flutter widgets HUD (`lib/ui/hud.dart`) stacked over the `GameWidget`.
 - `lib/game/teddy_game.dart`: game loop, spawning, pickups, catching. Uses simple distance checks, not Flame's collision system.
+- Monster speed = level speed × hunger boost ÷ fatness (`GameRules.monsterSpeed`). Fatness and hunger live on each `Monster` and change in its `update`. Stolen lollipops are `StolenLolly` components that call `monster.eat()` when they arrive.
 - `lib/game/rules.dart`: every tuning number (speeds, counts, timers). Change difficulty here. Tested in `test/game_rules_test.dart`.
 - `lib/game/components/`: Teddy, monsters, sweets, honey. All art is drawn with `Canvas`; there are no image assets yet.
 - Sound effects: `lib/game/sfx.dart` (`Sfx.sweet.play()` etc., using `flame_audio` `AudioPool`s preloaded in `onLoad`). The WAVs in `assets/audio/` are generated from sine waves by `tool/generate_sounds.dart` (`dart run tool/generate_sounds.dart`): edit the script and rerun it to change a sound, don't hand-edit the WAVs.
@@ -39,5 +40,6 @@ These three rules MUST always be followed:
 - `python3` isn't available in Git Bash on this machine; write helper scripts in Dart (`tool/`) instead.
 - The phone is often being played by a person while you test. Check with a screenshot before simulating taps, and don't press Home or Play mid-game (it resets their progress).
 - The Bash tool blocks `sleep N && ...`. Wait on the `flutter run` terminal output instead, or put the delay inside a script.
+- To ship a code change to the phone without wiping someone's game, press `r` (hot reload, keeps state) in the `flutter run` terminal, not `R` or a restart. Agents can't type into a running terminal tab, so ask the user to press it.
 - After adding a package, hot reload isn't enough: stop `flutter run` and start it again.
 - Phone only shows in `flutter devices` once USB debugging is on, USB mode is File transfer, and the RSA prompt is accepted.
