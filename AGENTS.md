@@ -42,5 +42,6 @@ These three rules MUST always be followed:
 - The phone is often being played by a person while you test. Check with a screenshot before simulating taps, and don't press Home or Play mid-game (it resets their progress).
 - The Bash tool blocks `sleep N && ...`. Wait on the `flutter run` terminal output instead, or put the delay inside a script.
 - To ship a code change to the phone without wiping someone's game, press `r` (hot reload, keeps state) in the `flutter run` terminal, not `R` or a restart. Agents can't type into a running terminal tab, so ask the user to press it.
+- New sound files need a full restart, not hot reload: `Sfx.load()` only runs in `onLoad`. Check they loaded with `adb logcat -d | grep -o "getDuration: [0-9]* (msec)" | sort -u` (one line per sound).
 - After adding a package, hot reload isn't enough: stop `flutter run` and start it again.
 - Phone only shows in `flutter devices` once USB debugging is on, USB mode is File transfer, and the RSA prompt is accepted.
