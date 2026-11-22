@@ -11,6 +11,7 @@ import 'components/playground.dart';
 import 'components/sweet.dart';
 import 'components/teddy.dart';
 import 'rules.dart';
+import 'sfx.dart';
 
 /// Teddy runs around collecting sweets while grumpy monsters chase him.
 class TeddyGame extends FlameGame {
@@ -55,6 +56,7 @@ class TeddyGame extends FlameGame {
 
   @override
   Future<void> onLoad() async {
+    await Sfx.load();
     teddy = Teddy(position: size / 2);
     add(Playground(onTap: (point) => teddy.moveTo(clampToField(point))));
     add(teddy);
@@ -68,6 +70,7 @@ class TeddyGame extends FlameGame {
     if (honey.value == 0) return;
     honey.value--;
     add(HoneyPuddle(position: teddy.position.clone()));
+    Sfx.honey.play();
     HapticFeedback.lightImpact();
   }
 
@@ -85,6 +88,7 @@ class TeddyGame extends FlameGame {
       if (sweet.collected || !_near(sweet, _pickupDistance)) continue;
       sweet.collect();
       score.value++;
+      Sfx.sweet.play();
       HapticFeedback.selectionClick();
     }
     final sweetsLeft =
@@ -97,6 +101,7 @@ class TeddyGame extends FlameGame {
       if (jar.collected || !_near(jar, _pickupDistance)) continue;
       jar.collect();
       honey.value = min(GameRules.maxHoney, honey.value + 1);
+      Sfx.jar.play();
       HapticFeedback.selectionClick();
     }
   }
@@ -114,6 +119,7 @@ class TeddyGame extends FlameGame {
       if (puddle != null) {
         puddle.use();
         monster.slip();
+        Sfx.slip.play();
         continue;
       }
 
@@ -135,6 +141,7 @@ class TeddyGame extends FlameGame {
     }
     teddy.makeSafe();
     monster.bounceAwayFrom(teddy.position);
+    Sfx.caught.play();
     HapticFeedback.mediumImpact();
   }
 
