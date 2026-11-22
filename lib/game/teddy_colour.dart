@@ -17,18 +17,30 @@ enum TeddyColour {
   final Color fur;
 }
 
-/// Who you play as (kid's pick: dinosaurs, bears and chickens).
+/// Who you play as (kid's pick: bears, dinosaurs, chickens and dogs).
 enum Critter {
-  bear('🐻', 10),
-  dino('🦖', 8),
-  chicken('🐔', 16);
+  bear('🐻', 10, trap: '🍯', swarm: '🐝'),
+  dino('🦖', 8, trap: '🍌', swarm: '🦕'),
+  chicken('🐔', 16, trap: '🥚', swarm: '🐤'),
+  dog('🐶', 10, trap: '🦴', swarm: '🐶');
 
-  const Critter(this.emoji, this.hatY);
+  const Critter(
+    this.emoji,
+    this.hatY, {
+    required this.trap,
+    required this.swarm,
+  });
 
   final String emoji;
 
   /// Where a hat sits on this critter's head, in its 76 x 76 box.
   final double hatY;
+
+  /// What this critter drops for monsters to slip on (bears drop honey).
+  final String trap;
+
+  /// What this critter sends to chase every monster away (bears send bees).
+  final String swarm;
 }
 
 /// The hero's face.
@@ -77,7 +89,71 @@ void paintTeddy(
     case Critter.chicken:
       _paintChicken(canvas, furColour, step: step, arms: arms, face: face);
       _paintEyes(canvas, 30, look: look, blink: blink, face: face);
+    case Critter.dog:
+      _paintDog(canvas, furColour, step: step, arms: arms);
+      _paintEyes(canvas, 24, look: look, blink: blink, face: face);
+      canvas.drawOval(
+        Rect.fromCenter(center: const Offset(38, 32), width: 11, height: 8),
+        Paint()..color = _darkColour,
+      );
+      _paintMouth(canvas, const Offset(38, 37), face);
+      // A happy dog sticks its tongue out.
+      if (face == TeddyFace.happy) {
+        canvas.drawOval(
+          Rect.fromCenter(center: const Offset(38, 43), width: 7, height: 9),
+          _fill(const Color(0xFFFF6F91)),
+        );
+      }
   }
+}
+
+void _paintDog(
+  Canvas canvas,
+  Color furColour, {
+  required double step,
+  required double arms,
+}) {
+  final fur = _fill(furColour);
+  final ears = _fill(_darker(furColour, 0.3));
+  final light = _fill(_lighter(furColour, 0.6));
+  // A waggy tail.
+  canvas.drawPath(
+    Path()
+      ..moveTo(52, 58)
+      ..quadraticBezierTo(70, 54, 68, 38)
+      ..quadraticBezierTo(62, 50, 50, 52)
+      ..close(),
+    fur,
+  );
+  // Paws and legs.
+  canvas.drawCircle(Offset(28, 70 - 3 * max(0, step)), 7, fur);
+  canvas.drawCircle(Offset(48, 70 - 3 * max(0, -step)), 7, fur);
+  canvas.drawCircle(Offset(17 - 2 * arms.abs(), 50 - 8 * arms), 7, fur);
+  canvas.drawCircle(Offset(59 + 2 * arms.abs(), 50 - 8 * arms), 7, fur);
+  // Body and chest.
+  canvas.drawCircle(const Offset(38, 54), 19, fur);
+  canvas.drawCircle(const Offset(38, 57), 11, light);
+  // Floppy ears hanging down beside the head (drawn first, so the head
+  // sits in front of them).
+  for (final side in const [-1.0, 1.0]) {
+    canvas.save();
+    canvas.translate(38 + side * 20, 12);
+    canvas.rotate(side * -0.25);
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(side * 3, 14), width: 14, height: 30),
+      ears,
+    );
+    canvas.restore();
+  }
+  // Head with a little patch around one eye.
+  canvas.drawCircle(const Offset(38, 27), 19, fur);
+  canvas.drawCircle(const Offset(46, 24), 5.5, ears);
+  // Snout.
+  canvas.drawOval(
+    Rect.fromCenter(center: const Offset(38, 36), width: 24, height: 16),
+    light,
+  );
+  _paintCheeks(canvas, 33);
 }
 
 Paint _fill(Color colour) => Paint()..color = colour;
