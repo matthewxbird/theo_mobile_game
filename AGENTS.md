@@ -20,6 +20,11 @@ These three rules MUST always be followed:
 - Leaderboard: `lib/game/leaderboard.dart`, stored with `shared_preferences` (best level per teddy colour). Check it on the phone with `adb shell run-as com.theo.theo_mobile_game cat shared_prefs/FlutterSharedPreferences.xml`.
 - Big celebratory animations (e.g. honey-to-bee, `lib/ui/honey_to_bee.dart`) are Flutter overlays, not Flame components. The game bumps a `ValueNotifier<int>` event counter (`honeyTurnedIntoBee`) and the overlay plays when it changes. Any reward the animation delivers is applied by the game on a timer (`_beesOnTheWay`), so it still lands if the screen changes mid-animation.
 - App icon: `tool/make_icon_test.dart` draws `assets/icon/*.png` from the game art (it's a test only so it can use `dart:ui`; `flutter test` alone only runs `test/`, so run it by path: `flutter test tool/make_icon_test.dart`). Then `dart run flutter_launcher_icons` regenerates every Android/iOS size (config at the bottom of `pubspec.yaml`).
+- The hero is a `Critter` (bear, dino, chicken, dog) in a `TeddyColour`; `paintTeddy(critter: ...)` draws all of them. Each `Critter` names its trap and swarm emoji; honey/bee code (`HoneyJar`, `HoneyPuddle`, `Bee`, HUD, honey-to-bee) reads `game.critter` to pick its look and `Sfx.swarmFor` its sound. Bears keep their hand-drawn honey and bees.
+- Don't name a type `Hero` in this app: it clashes with Flutter's `Hero` widget. The (critter, colour) pair is `Player`.
+- Leaderboard keys: bears keep `best_level_<colour>` (old saves still count); others use `best_level_<critter>_<colour>`.
+- `paintEmoji` (`lib/game/components/emoji.dart`) draws an emoji inside a Flame component; it caches `TextPainter`s.
+- The special pickup is a `Gift` (`hat` or `ribbon`); the hero's `wearing` holds it. Hats blind (run off screen), ribbons tie up (fall over and flash out).
 - Enemies are all `Monster` with an `EnemyKind` (`blob`, `bat`). Add new kinds there: same rules, different drawing and movement.
 - HUD button and badge sizes live in `lib/game/layout.dart` (`HudLayout`). The HUD draws with them, and the game uses them to keep pickups out from under the buttons. Change sizes there, never as literals in the widgets.
 - Components are added straight to the game (screen coordinates), not to `world`, so there is no camera to think about.
