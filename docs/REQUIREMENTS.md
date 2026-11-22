@@ -35,6 +35,7 @@ Teddy can drop honey to make monsters slip over and disappear.
 - When a monster walks into honey it **slips over and disappears** (kid's pick): a funny wobble, a "whoops" sound, then it pops in a puff.
 - The puddle is used up after one monster.
 - Teddy starts with 3 honey pots. Collect honey jars around the level to get more. The honey button shows how many pots are left and goes grey at zero.
+- **4 honey pots turn into 1 bee (beehive).** When the 4th pot is collected, a magic animation plays: 4 pots fly out of the honey button with counting badges (1, 2, 3, 4), swirl together, go poof in a sparkle burst, and a bee pops out, wiggles, and flies to the bee button. Twinkly magic sound, then a buzz.
 - Teddy walks over his own honey without slipping.
 
 ## Getting caught
