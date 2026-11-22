@@ -130,17 +130,26 @@ class LevelUpBanner extends StatelessWidget {
   }
 }
 
-/// Big round honey button. Shows how many honey pots are left.
-class HoneyButton extends StatelessWidget {
-  const HoneyButton({super.key, required this.honey, required this.onPressed});
+/// Big round bonus button (honey, beehive). Shows how many are left.
+class BonusButton extends StatelessWidget {
+  const BonusButton({
+    super.key,
+    required this.emoji,
+    required this.color,
+    required this.count,
+    required this.onPressed,
+  });
 
-  final ValueListenable<int> honey;
+  final String emoji;
+  final Color color;
+
+  final ValueListenable<int> count;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-      valueListenable: honey,
+      valueListenable: count,
       builder: (context, value, _) {
         final empty = value == 0;
         return GestureDetector(
@@ -161,13 +170,13 @@ class HoneyButton extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: empty
                           ? const Color(0xFFBDBDBD)
-                          : const Color(0xFFFFC107),
+                          : color,
                       border: Border.all(
                         color: const Color(0xFF8D5524),
                         width: 5,
                       ),
                     ),
-                    child: const Text('🍯', style: TextStyle(fontSize: 52)),
+                    child: Text(emoji, style: const TextStyle(fontSize: 52)),
                   ),
                   Positioned(
                     right: 0,

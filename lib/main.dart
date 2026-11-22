@@ -58,10 +58,22 @@ class _TeddyAppState extends State<TeddyApp> {
                   ),
                 ),
                 Positioned(
+                  left: 24,
+                  bottom: 24,
+                  child: BonusButton(
+                    emoji: '🐝',
+                    color: const Color(0xFFFFB74D),
+                    count: _game.beehives,
+                    onPressed: _game.useBeehive,
+                  ),
+                ),
+                Positioned(
                   right: 24,
                   bottom: 24,
-                  child: HoneyButton(
-                    honey: _game.honey,
+                  child: BonusButton(
+                    emoji: '🍯',
+                    color: const Color(0xFFFFC107),
+                    count: _game.honey,
                     onPressed: _game.dropHoney,
                   ),
                 ),

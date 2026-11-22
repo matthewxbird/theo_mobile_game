@@ -5,6 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import 'components/bee.dart';
 import 'components/honey.dart';
 import 'components/monster.dart';
 import 'components/playground.dart';
@@ -23,6 +24,7 @@ class TeddyGame extends FlameGame {
   static const _pickupDistance = 45.0;
   static const _catchDistance = 48.0;
   static const _honeyDistance = 40.0;
+  static const _beesPerMonster = 3;
 
   static const _monsterColors = [
     Color(0xFF9B6BD6),
@@ -36,6 +38,9 @@ class TeddyGame extends FlameGame {
   final score = ValueNotifier<int>(0);
   final level = ValueNotifier<int>(1);
   final honey = ValueNotifier<int>(GameRules.startingHoney);
+
+  /// Beehives to use. You get one each time you finish a level.
+  final beehives = ValueNotifier<int>(0);
 
   /// True while the "Level up!" banner is showing.
   final celebrating = ValueNotifier<bool>(false);
@@ -82,6 +87,29 @@ class TeddyGame extends FlameGame {
     HapticFeedback.lightImpact();
   }
 
+  /// Called by the beehive button: send bees to sting every monster.
+  void useBeehive() {
+    if (beehives.value == 0) return;
+    final targets =
+        children.whereType<Monster>().where((m) => m.isChasing).toList();
+    // Don't waste a beehive when there's nobody to sting.
+    if (targets.isEmpty) return;
+    beehives.value--;
+    for (final monster in targets) {
+      for (var i = 0; i < _beesPerMonster; i++) {
+        add(
+          Bee(
+            position: teddy.position.clone(),
+            target: monster,
+            delay: i * 0.12,
+          ),
+        );
+      }
+    }
+    Sfx.buzz.play();
+    HapticFeedback.mediumImpact();
+  }
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -95,6 +123,7 @@ class TeddyGame extends FlameGame {
   void _levelUp() {
     level.value++;
     score.value = 0;
+    beehives.value += GameRules.beehivesPerLevelUp;
     for (final monster in children.whereType<Monster>()) {
       monster.flashAndFade();
     }
