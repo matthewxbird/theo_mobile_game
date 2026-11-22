@@ -30,9 +30,12 @@ class Sweet extends Pickup {
   final Paint _candy;
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas) => paintLolly(canvas, _candy);
+
+  /// Draws a lollipop in a 40 x 40 box.
+  static void paintLolly(Canvas canvas, Paint candy) {
     canvas.drawLine(const Offset(20, 24), const Offset(20, 40), _stick);
-    canvas.drawCircle(const Offset(20, 15), 14, _candy);
+    canvas.drawCircle(const Offset(20, 15), 14, candy);
     canvas.drawArc(
       Rect.fromCircle(center: const Offset(20, 15), radius: 8),
       0,
