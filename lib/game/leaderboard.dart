@@ -3,63 +3,87 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'teddy_colour.dart';
 
-/// Best level finished by each teddy colour, saved on the phone.
+/// One player's look: which critter, in which colour.
+typedef Player = (Critter, TeddyColour);
+
+/// Best level finished by each critter and colour, saved on the phone.
 class Leaderboard {
   static const _bestKey = 'best_level_';
   static const _lastColourKey = 'last_colour';
+  static const _lastCritterKey = 'last_critter';
 
-  final best = ValueNotifier<Map<TeddyColour, int>>({});
+  final best = ValueNotifier<Map<Player, int>>({});
   TeddyColour lastColour = TeddyColour.brown;
+  Critter lastCritter = Critter.bear;
 
-  /// The teddy with the most levels done, if anyone has finished one.
-  TeddyColour? get leader {
+  /// Bears keep the original keys (best_level_pink), so scores from before
+  /// there were other critters still count.
+  static String _key(Player hero) {
+    final (critter, colour) = hero;
+    return critter == Critter.bear
+        ? '$_bestKey${colour.name}'
+        : '$_bestKey${critter.name}_${colour.name}';
+  }
+
+  /// The [critter] with the most levels done, if anyone has finished one.
+  TeddyColour? leaderFor(Critter critter) {
     TeddyColour? top;
     var topLevels = 0;
-    for (final entry in best.value.entries) {
-      if (entry.value > topLevels) {
-        top = entry.key;
-        topLevels = entry.value;
+    for (final colour in TeddyColour.values) {
+      final levels = levelsDone((critter, colour));
+      if (levels > topLevels) {
+        top = colour;
+        topLevels = levels;
       }
     }
     return top;
   }
 
-  int levelsDone(TeddyColour colour) => best.value[colour] ?? 0;
+  int levelsDone(Player hero) => best.value[hero] ?? 0;
 
   Future<void> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       best.value = {
-        for (final colour in TeddyColour.values)
-          colour: prefs.getInt('$_bestKey${colour.name}') ?? 0,
+        for (final critter in Critter.values)
+          for (final colour in TeddyColour.values)
+            (critter, colour): prefs.getInt(_key((critter, colour))) ?? 0,
       };
-      final last = prefs.getString(_lastColourKey);
+      final lastColourName = prefs.getString(_lastColourKey);
       lastColour = TeddyColour.values.firstWhere(
-        (c) => c.name == last,
+        (c) => c.name == lastColourName,
         orElse: () => TeddyColour.brown,
+      );
+      final lastCritterName = prefs.getString(_lastCritterKey);
+      lastCritter = Critter.values.firstWhere(
+        (c) => c.name == lastCritterName,
+        orElse: () => Critter.bear,
       );
     } catch (error) {
       debugPrint('Could not load leaderboard: $error');
     }
   }
 
-  Future<void> chooseColour(TeddyColour colour) async {
-    lastColour = colour;
+  /// Remember who played last, so the start screen picks them again.
+  Future<void> choose(Player hero) async {
+    lastCritter = hero.$1;
+    lastColour = hero.$2;
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_lastColourKey, colour.name);
+      await prefs.setString(_lastCritterKey, lastCritter.name);
+      await prefs.setString(_lastColourKey, lastColour.name);
     } catch (error) {
-      debugPrint('Could not save colour: $error');
+      debugPrint('Could not save choice: $error');
     }
   }
 
-  /// Remember [levels] for [colour] if it beats their best.
-  Future<void> record(TeddyColour colour, int levels) async {
-    if (levels <= levelsDone(colour)) return;
-    best.value = {...best.value, colour: levels};
+  /// Remember [levels] for [hero] if it beats their best.
+  Future<void> record(Player hero, int levels) async {
+    if (levels <= levelsDone(hero)) return;
+    best.value = {...best.value, hero: levels};
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('$_bestKey${colour.name}', levels);
+      await prefs.setInt(_key(hero), levels);
     } catch (error) {
       debugPrint('Could not save leaderboard: $error');
     }

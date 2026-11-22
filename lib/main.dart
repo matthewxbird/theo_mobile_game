@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'game/layout.dart';
 import 'game/leaderboard.dart';
 import 'game/rules.dart';
-import 'game/teddy_colour.dart';
 import 'game/teddy_game.dart';
 import 'ui/get_ready.dart';
 import 'ui/honey_to_bee.dart';
@@ -49,13 +48,13 @@ class _TeddyAppState extends State<TeddyApp> {
 
   void _onPhaseChanged() {
     if (_game.phase.value == GamePhase.levelComplete) {
-      _leaderboard.record(_game.colour, _game.level.value - 1);
+      _leaderboard.record((_game.critter, _game.colour), _game.level.value - 1);
     }
   }
 
-  void _play(TeddyColour colour) {
-    _leaderboard.chooseColour(colour);
-    _game.startNewGame(colour);
+  void _play(Player hero) {
+    _leaderboard.choose(hero);
+    _game.startNewGame(hero.$1, hero.$2);
   }
 
   @override
@@ -86,6 +85,7 @@ class _TeddyAppState extends State<TeddyApp> {
                   GamePhase.playing => _hud(),
                   GamePhase.levelComplete => LevelCompleteScreen(
                     colour: _game.colour,
+                    critter: _game.critter,
                     nextLevel: _game.level.value,
                     onNext: _game.nextLevel,
                     onHome: _game.backToMenu,

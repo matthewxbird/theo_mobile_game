@@ -12,11 +12,13 @@ class TeddyPicture extends StatefulWidget {
   const TeddyPicture({
     super.key,
     required this.colour,
+    this.critter = Critter.bear,
     this.size = 76,
     this.dancing = false,
   });
 
   final TeddyColour colour;
+  final Critter critter;
   final double size;
   final bool dancing;
 
@@ -67,6 +69,7 @@ class _TeddyPictureState extends State<TeddyPicture>
               size: Size.square(widget.size),
               painter: _TeddyPainter(
                 widget.colour,
+                critter: widget.critter,
                 // Dancing teddies wave their arms and grin.
                 arms: widget.dancing ? sin(t * 2) : 0,
                 step: widget.dancing ? sin(t * 2) : 0,
@@ -83,12 +86,14 @@ class _TeddyPictureState extends State<TeddyPicture>
 class _TeddyPainter extends CustomPainter {
   _TeddyPainter(
     this.colour, {
+    this.critter = Critter.bear,
     this.arms = 0,
     this.step = 0,
     this.happy = false,
   });
 
   final TeddyColour colour;
+  final Critter critter;
   final double arms;
   final double step;
   final bool happy;
@@ -99,6 +104,7 @@ class _TeddyPainter extends CustomPainter {
     paintTeddy(
       canvas,
       colour.fur,
+      critter: critter,
       arms: arms,
       step: step,
       face: happy ? TeddyFace.happy : TeddyFace.smile,
@@ -108,6 +114,7 @@ class _TeddyPainter extends CustomPainter {
   @override
   bool shouldRepaint(_TeddyPainter oldDelegate) =>
       oldDelegate.colour != colour ||
+      oldDelegate.critter != critter ||
       oldDelegate.arms != arms ||
       oldDelegate.step != step ||
       oldDelegate.happy != happy;

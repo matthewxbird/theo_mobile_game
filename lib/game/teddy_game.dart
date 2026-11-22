@@ -85,11 +85,13 @@ class TeddyGame extends FlameGame {
   /// never the same as the one before.
   Place place = Place.meadow;
   TeddyColour get colour => teddy.colour;
+  Critter get critter => teddy.critter;
 
   /// Start a new game from level 1 with the chosen teddy.
-  void startNewGame(TeddyColour colour) {
+  void startNewGame(Critter critter, TeddyColour colour) {
     if (!isLoaded) return;
     teddy.colour = colour;
+    teddy.critter = critter;
     level.value = 1;
     score.value = 0;
     honey.value = GameRules.startingHoney;

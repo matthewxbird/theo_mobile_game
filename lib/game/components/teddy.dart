@@ -28,6 +28,9 @@ class Teddy extends PositionComponent {
 
   TeddyColour colour = TeddyColour.brown;
 
+  /// Bear, dinosaur, chicken or dog.
+  Critter critter = Critter.bear;
+
   Vector2? _target;
   double _safeTime = 0;
   double _time = 0;
@@ -170,6 +173,7 @@ class Teddy extends PositionComponent {
     paintTeddy(
       canvas,
       colour.fur,
+      critter: critter,
       look: _look,
       blink: _blink > 0,
       face: face,
@@ -192,7 +196,7 @@ class Teddy extends PositionComponent {
     // Sways a little behind his waddle, and tips now and then.
     final sway = -tilt * 0.8 + sin(_time * 1.3) * 0.08;
     canvas.save();
-    canvas.translate(38, 10 + drop);
+    canvas.translate(38, critter.hatY + drop);
     canvas.rotate(sway);
     canvas.scale(stretch, 2 - stretch);
     paintHat(canvas, Offset.zero, scale: 0.9);

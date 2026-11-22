@@ -10,12 +10,14 @@ class LevelCompleteScreen extends StatefulWidget {
   const LevelCompleteScreen({
     super.key,
     required this.colour,
+    required this.critter,
     required this.nextLevel,
     required this.onNext,
     required this.onHome,
   });
 
   final TeddyColour colour;
+  final Critter critter;
   final int nextLevel;
   final VoidCallback onNext;
   final VoidCallback onHome;
@@ -101,6 +103,7 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
                   child: Center(
                     child: TeddyPicture(
                       colour: widget.colour,
+                      critter: widget.critter,
                       size: 200,
                       dancing: true,
                     ),
@@ -117,9 +120,9 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
                       color: const Color(0xDDFFFFFF),
                       borderRadius: BorderRadius.circular(40),
                     ),
-                    child: const Text(
-                      '+1 🐝',
-                      style: TextStyle(
+                    child: Text(
+                      '+1 ${widget.critter.swarm}',
+                      style: const TextStyle(
                         fontSize: 44,
                         fontWeight: FontWeight.w900,
                         color: brown,
