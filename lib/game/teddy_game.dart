@@ -39,6 +39,12 @@ class TeddyGame extends FlameGame {
     Color(0xFFF08A3C),
   ];
 
+  static const _batColors = [
+    Color(0xFF5E35B1),
+    Color(0xFF455A64),
+    Color(0xFF8E244D),
+  ];
+
   final Random _random;
 
   /// Lollipops collected on this level.
@@ -371,10 +377,13 @@ class TeddyGame extends FlameGame {
     _monsterTimer -= dt;
     if (_monsterTimer > 0) return;
     _monsterTimer = GameRules.monsterRespawnDelay;
+    final isBat = _random.nextDouble() < GameRules.batChance;
+    final colours = isBat ? _batColors : _monsterColors;
     add(
       Monster(
         position: _edgePointAwayFromTeddy(),
-        color: _monsterColors[_random.nextInt(_monsterColors.length)],
+        color: colours[_random.nextInt(colours.length)],
+        kind: isBat ? EnemyKind.bat : EnemyKind.blob,
       ),
     );
   }

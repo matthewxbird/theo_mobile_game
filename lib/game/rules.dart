@@ -27,6 +27,9 @@ class GameRules {
   static const beehivesPerLevelUp = 1;
 
   static const maxMonsters = 3;
+
+  /// How often a new bad guy is a bad bat instead of a grumpy monster.
+  static const batChance = 0.4;
   static const firstMonsterDelay = 3.0;
   static const monsterRespawnDelay = 3.0;
   static const minMonsterSpawnDistance = 250.0;

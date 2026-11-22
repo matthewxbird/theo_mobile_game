@@ -9,11 +9,28 @@ import '../sfx.dart';
 import '../teddy_game.dart';
 import 'hat.dart';
 
-/// A silly, grumpy blob that slowly walks towards Teddy.
+/// The kinds of bad guys.
+enum EnemyKind {
+  /// A silly, grumpy blob that walks.
+  blob,
+
+  /// A bad bat that flaps and swoops in a wavy line.
+  bat,
+}
+
+/// A bad guy that slowly comes after Teddy: a grumpy monster or a bad bat.
 class Monster extends PositionComponent with HasGameReference<TeddyGame> {
-  Monster({required super.position, required Color color})
-    : _body = Paint()..color = color,
-      super(size: Vector2.all(64), anchor: Anchor.center, priority: 2);
+  Monster({
+    required super.position,
+    required Color color,
+    this.kind = EnemyKind.blob,
+  }) : _body = Paint()..color = color,
+       _wing =
+           Paint()..color = Color.lerp(color, const Color(0xFF000000), 0.3)!,
+       super(size: Vector2.all(64), anchor: Anchor.center, priority: 2);
+
+  final EnemyKind kind;
+  final Paint _wing;
 
   static const _slipWobbleTime = 0.6;
   static const _slipShrinkTime = 0.3;
@@ -200,7 +217,13 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
 
     final toTeddy = game.teddy.position - position;
     if (toTeddy.length > 1) {
-      position.add(toTeddy.normalized()..scale(speed * dt));
+      final direction = toTeddy.normalized();
+      position.add(direction * (speed * dt));
+      if (kind == EnemyKind.bat) {
+        // Bats swoop from side to side as they fly.
+        final sideways = Vector2(-direction.y, direction.x);
+        position.add(sideways * (cos(_time * 3) * 70 * dt));
+      }
     }
   }
 
@@ -233,7 +256,7 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
     var emerge = 1.0;
     if (_emergeLeft > 0) {
       final p = 1 - _emergeLeft / _emergeTime;
-      _drawDust(canvas, p);
+      if (kind == EnemyKind.blob) _drawDust(canvas, p);
       emerge = Curves.elasticOut.transform(p);
     }
 
@@ -265,12 +288,16 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
     canvas.scale(wide * (1 - squish) * emerge, tall * (1 + squish) * emerge);
     canvas.translate(-32, -64);
 
-    // Feet take turns stepping, then the body.
-    final double stepL = walking ? 3 * max(0.0, walkCycle) : 0.0;
-    final double stepR = walking ? 3 * max(0.0, -walkCycle) : 0.0;
-    canvas.drawOval(Rect.fromLTWH(12, 52 - stepL, 16, 10), _body);
-    canvas.drawOval(Rect.fromLTWH(36, 52 - stepR, 16, 10), _body);
-    canvas.drawCircle(const Offset(32, 34), 26, _body);
+    if (kind == EnemyKind.bat) {
+      _drawBatBody(canvas);
+    } else {
+      // Feet take turns stepping, then the body.
+      final double stepL = walking ? 3 * max(0.0, walkCycle) : 0.0;
+      final double stepR = walking ? 3 * max(0.0, -walkCycle) : 0.0;
+      canvas.drawOval(Rect.fromLTWH(12, 52 - stepL, 16, 10), _body);
+      canvas.drawOval(Rect.fromLTWH(36, 52 - stepR, 16, 10), _body);
+      canvas.drawCircle(const Offset(32, 34), 26, _body);
+    }
 
     // Stung: little red bumps.
     if (_fading) {
@@ -411,6 +438,66 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
       }
     }
   }
+
+  /// A bad bat: flapping wings, pointy ears, tiny feet and fangs.
+  void _drawBatBody(Canvas canvas) {
+    // Bats bob up and down as they flap.
+    final flap = sin(_time * 18);
+    canvas.translate(0, -6 + sin(_time * 4) * 4);
+
+    // Wings, flapping around the shoulders. Draw the left, then mirror it.
+    for (final side in const [1.0, -1.0]) {
+      canvas.save();
+      canvas.translate(32, 0);
+      canvas.scale(side, 1);
+      canvas.translate(-32, 0);
+      canvas.translate(14, 32);
+      canvas.rotate(flap * 0.5);
+      canvas.drawPath(_batWing, _wing);
+      canvas.restore();
+    }
+    // Pointy ears.
+    for (final side in const [1.0, -1.0]) {
+      canvas.save();
+      canvas.translate(32, 0);
+      canvas.scale(side, 1);
+      canvas.translate(-32, 0);
+      canvas.drawPath(
+        Path()
+          ..moveTo(14, 20)
+          ..lineTo(15, 2)
+          ..lineTo(27, 13)
+          ..close(),
+        _body,
+      );
+      canvas.restore();
+    }
+    // Body and little dangling feet.
+    canvas.drawCircle(const Offset(32, 34), 22, _body);
+    canvas.drawCircle(const Offset(26, 57), 3, _body);
+    canvas.drawCircle(const Offset(38, 57), 3, _body);
+    // Fangs.
+    for (final x in const [27.0, 37.0]) {
+      canvas.drawPath(
+        Path()
+          ..moveTo(x - 2.5, 50)
+          ..lineTo(x + 2.5, 50)
+          ..lineTo(x, 55)
+          ..close(),
+        _white,
+      );
+    }
+  }
+
+  /// One scalloped bat wing, from the shoulder outwards (to the left).
+  static final _batWing =
+      Path()
+        ..moveTo(0, -6)
+        ..quadraticBezierTo(-18, -20, -32, -12)
+        ..quadraticBezierTo(-28, -2, -24, 4)
+        ..quadraticBezierTo(-18, -2, -14, 6)
+        ..quadraticBezierTo(-8, 0, -4, 10)
+        ..close();
 
   /// A puff of dust where the monster pops out of the ground.
   void _drawDust(Canvas canvas, double p) {
