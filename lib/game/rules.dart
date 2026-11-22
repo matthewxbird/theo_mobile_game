@@ -5,12 +5,20 @@ class GameRules {
   static const teddySpeed = 230.0;
 
   static const startingHoney = 3;
+
   /// Collecting this many honey pots turns them into one beehive.
   static const honeyForBeehive = 4;
 
   /// How long the honey-to-bee animation takes before the bee arrives.
   static const honeyToBeeSeconds = 1.8;
   static const honeyJarInterval = 12.0;
+
+  /// Hats are special: one turns up this often, and only when Teddy has no
+  /// hat and there isn't one on the floor or flying already.
+  static const hatInterval = 25.0;
+
+  /// Tap this close to Teddy to throw his hat.
+  static const hatTapDistance = 60.0;
 
   static const sweetsOnScreen = 3;
   static const sweetsLostOnCatch = 1;

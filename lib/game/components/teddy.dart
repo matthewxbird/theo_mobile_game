@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 
 import '../rules.dart';
 import '../teddy_colour.dart';
+import 'hat.dart';
 
 /// The hero. Walks to wherever he is told to go.
 class Teddy extends PositionComponent {
@@ -12,6 +13,14 @@ class Teddy extends PositionComponent {
     : super(size: Vector2.all(76), anchor: Anchor.center, priority: 3);
 
   TeddyColour colour = TeddyColour.brown;
+
+  /// Wearing the special hat? Tap Teddy to throw it at a monster.
+  bool hasHat = false;
+
+  static final _tapMeRing =
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4;
 
   Vector2? _target;
   double _safeTime = 0;
@@ -54,10 +63,18 @@ class Teddy extends PositionComponent {
     // Blink while safe after being caught.
     if (isSafe && (_time * 10).floor().isEven) return;
 
+    if (hasHat) {
+      // A gentle pulsing ring says "tap me!".
+      final pulse = (sin(_time * 5) + 1) / 2;
+      _tapMeRing.color = Color.fromRGBO(255, 235, 59, 0.4 + 0.5 * pulse);
+      canvas.drawCircle(const Offset(38, 42), 46 + 6 * pulse, _tapMeRing);
+    }
+
     final bob = isMoving ? sin(_time * 14) * 3 : 0.0;
     canvas.save();
     canvas.translate(0, bob);
     paintTeddy(canvas, colour.fur);
+    if (hasHat) paintHat(canvas, const Offset(38, 10), scale: 0.9);
     canvas.restore();
   }
 }

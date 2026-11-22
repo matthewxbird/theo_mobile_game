@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'components/bee.dart';
+import 'components/hat.dart';
 import 'components/honey.dart';
 import 'components/monster.dart';
 import 'components/playground.dart';
@@ -62,6 +63,7 @@ class TeddyGame extends FlameGame {
   late final Teddy teddy;
   double _monsterTimer = GameRules.firstMonsterDelay;
   double _honeyJarTimer = GameRules.honeyJarInterval;
+  double _hatTimer = GameRules.hatInterval;
 
   bool get isPlaying => phase.value == GamePhase.playing;
   TeddyColour get colour => teddy.colour;
@@ -76,6 +78,12 @@ class TeddyGame extends FlameGame {
     beehives.value = 0;
     _beesOnTheWay.clear();
     _clearBoard();
+    // A new game starts with no hat anywhere.
+    teddy.hasHat = false;
+    for (final hat in children.whereType<HatPickup>().toList()) {
+      hat.removeFromParent();
+    }
+    _hatTimer = GameRules.hatInterval;
     phase.value = GamePhase.ready;
   }
 
@@ -106,7 +114,49 @@ class TeddyGame extends FlameGame {
     for (final c in children.whereType<HoneyPuddle>().toList()) {
       c.removeFromParent();
     }
+    // A hat still in the air when the level ends comes back to Teddy.
+    for (final hat in children.whereType<ThrownHat>().toList()) {
+      hat.removeFromParent();
+      teddy.hasHat = true;
+    }
     teddy.resetTo(size / 2);
+  }
+
+  /// The chasing monster closest to [point], if there is one.
+  Monster? nearestMonsterTo(Vector2 point) {
+    Monster? nearest;
+    var best = double.infinity;
+    for (final monster in children.whereType<Monster>()) {
+      if (!monster.isChasing) continue;
+      final distance = monster.position.distanceTo(point);
+      if (distance < best) {
+        best = distance;
+        nearest = monster;
+      }
+    }
+    return nearest;
+  }
+
+  void _onTap(Vector2 point) {
+    if (!isPlaying) return;
+    final tappedTeddy =
+        point.distanceTo(teddy.position) < GameRules.hatTapDistance;
+    if (teddy.hasHat && tappedTeddy) {
+      _throwHat();
+      return;
+    }
+    teddy.moveTo(clampToField(point));
+  }
+
+  /// Teddy throws his hat at the nearest monster.
+  void _throwHat() {
+    final target = nearestMonsterTo(teddy.position);
+    // Nobody to throw at: keep the hat on.
+    if (target == null) return;
+    teddy.hasHat = false;
+    add(ThrownHat(position: teddy.position - Vector2(0, 30), target: target));
+    Sfx.whoosh.play();
+    HapticFeedback.mediumImpact();
   }
 
   int get sweetsNeeded => GameRules.sweetsForLevel(level.value);
@@ -130,13 +180,7 @@ class TeddyGame extends FlameGame {
   Future<void> onLoad() async {
     await Sfx.load();
     teddy = Teddy(position: size / 2);
-    add(
-      Playground(
-        onTap: (point) {
-          if (isPlaying) teddy.moveTo(clampToField(point));
-        },
-      ),
-    );
+    add(Playground(onTap: _onTap));
     add(teddy);
     for (var i = 0; i < GameRules.sweetsOnScreen; i++) {
       _spawnSweet();
@@ -185,6 +229,20 @@ class TeddyGame extends FlameGame {
     _updateMonsters();
     _spawnMonsters(dt);
     _spawnHoneyJars(dt);
+    _spawnHat(dt);
+  }
+
+  /// Only one hat at a time: none while Teddy wears one, one lies on the
+  /// floor, or one is flying.
+  void _spawnHat(double dt) {
+    final hatAround =
+        teddy.hasHat ||
+        children.any((c) => c is ThrownHat || (c is HatPickup && !c.collected));
+    if (hatAround) return;
+    _hatTimer -= dt;
+    if (_hatTimer > 0) return;
+    _hatTimer = GameRules.hatInterval;
+    add(HatPickup(position: _randomFieldPoint()));
   }
 
   void _levelComplete() {
@@ -215,6 +273,16 @@ class TeddyGame extends FlameGame {
         children.whereType<Sweet>().where((s) => !s.collected).length;
     for (var i = sweetsLeft; i < GameRules.sweetsOnScreen; i++) {
       _spawnSweet();
+    }
+
+    for (final hat in children.whereType<HatPickup>().toList()) {
+      if (hat.collected || teddy.hasHat || !_near(hat, _pickupDistance)) {
+        continue;
+      }
+      hat.collect();
+      teddy.hasHat = true;
+      Sfx.tada.play();
+      HapticFeedback.selectionClick();
     }
 
     for (final jar in children.whereType<HoneyJar>().toList()) {

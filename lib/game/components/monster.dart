@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import '../rules.dart';
 import '../sfx.dart';
 import '../teddy_game.dart';
+import 'hat.dart';
 
 /// A silly, grumpy blob that slowly walks towards Teddy.
 class Monster extends PositionComponent with HasGameReference<TeddyGame> {
@@ -18,6 +19,7 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
   static const _flashTime = 0.8;
   static const _fadeOutTime = 0.5;
   static const _bounceTime = 0.35;
+  static const _panicSpeed = 320.0;
   static const _bounceSpeed = 260.0;
 
   static final _white = Paint()..color = const Color(0xFFFFFFFF);
@@ -53,8 +55,28 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
   /// Seconds since this monster last ate. Hungry monsters speed up.
   double secondsHungry = 0;
 
+  /// Hat over its eyes: running away in a panic, off the screen.
+  bool _blinded = false;
+  Vector2 _runDirection = Vector2(1, 0);
+
   /// Chasing monsters can catch Teddy, fall into honey and get stung.
-  bool get isChasing => !_slipping && !_fading;
+  bool get isChasing => !_slipping && !_fading && !_blinded;
+
+  /// Teddy's hat lands over its eyes! It can't see, so it runs off screen.
+  void coverEyesWithHat() {
+    if (!isChasing) return;
+    _blinded = true;
+    // Run towards the nearest side of the screen, away from Teddy.
+    final screen = game.size;
+    final exits = [
+      (position.x, Vector2(-1, 0)),
+      (screen.x - position.x, Vector2(1, 0)),
+      (position.y, Vector2(0, -1)),
+      (screen.y - position.y, Vector2(0, 1)),
+    ]..sort((a, b) => a.$1.compareTo(b.$1));
+    _runDirection = exits.first.$2;
+    Sfx.yikes.play();
+  }
 
   bool get _isHungry => secondsHungry > GameRules.hungerSeconds / 2;
 
@@ -104,6 +126,23 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
       return;
     }
 
+    if (_blinded) {
+      // Zig-zag panic run until it's off the screen.
+      final sideways = Vector2(-_runDirection.y, _runDirection.x);
+      position
+        ..add(_runDirection * (_panicSpeed * dt))
+        ..add(sideways * (cos(_time * 14) * 120 * dt));
+      angle = sin(_time * 20) * 0.2;
+      final screen = game.size;
+      if (position.x < -size.x ||
+          position.y < -size.y ||
+          position.x > screen.x + size.x ||
+          position.y > screen.y + size.y) {
+        removeFromParent();
+      }
+      return;
+    }
+
     fatness = max(0, fatness - dt / GameRules.fatWearOffSeconds);
     secondsHungry += dt;
     if (_munchLeft > 0) _munchLeft -= dt;
@@ -146,7 +185,10 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
     canvas.save();
     // Squishy walk: slow and wobbly when fat, quick and jittery when hungry.
     final wobbleSpeed = 10 / (1 + 0.5 * fatness) * (_isHungry ? 1.8 : 1);
-    final squish = isChasing ? sin(_time * wobbleSpeed) * 0.05 : 0.0;
+    final squish =
+        isChasing || _blinded
+            ? sin(_time * (_blinded ? 30 : wobbleSpeed)) * 0.06
+            : 0.0;
     // Fat monsters get wider (and a bit taller), growing from their feet.
     final wide = 1 + 0.28 * fatness;
     final tall = 1 + 0.12 * fatness;
@@ -167,7 +209,14 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
     canvas.drawLine(const Offset(14, 19), const Offset(28, 24), _brow);
     canvas.drawLine(const Offset(50, 19), const Offset(36, 24), _brow);
 
-    if (_munchLeft > 0) {
+    if (_blinded) {
+      // A wobbly "Oh no!" mouth, and Teddy's hat pulled down over its eyes.
+      canvas.drawOval(
+        Rect.fromCenter(center: const Offset(32, 48), width: 12, height: 10),
+        _dark,
+      );
+      paintHat(canvas, const Offset(32, 36), scale: 1.25);
+    } else if (_munchLeft > 0) {
       // Chomping: mouth opens and shuts.
       final open = (sin(_munchLeft * 30) + 1) / 2;
       canvas.drawOval(
