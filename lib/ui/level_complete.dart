@@ -107,7 +107,7 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
                   ),
                 ),
                 PopIn(
-                  delay: const Duration(milliseconds: 1600),
+                  delay: const Duration(milliseconds: 500),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -129,7 +129,7 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
                 ),
                 const SizedBox(height: 28),
                 PopIn(
-                  delay: const Duration(milliseconds: 2000),
+                  delay: const Duration(milliseconds: 800),
                   child: PulsingButton(
                     color: const Color(0xFFFF7043),
                     onPressed: widget.onNext,
