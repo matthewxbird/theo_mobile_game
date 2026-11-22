@@ -1,5 +1,6 @@
 Always write back learnings: when you discover something non-obvious about this project (setup gotchas, build fixes, device quirks, conventions), add it to the Learnings section below before finishing your task.
 Never add a co-author (no `Co-Authored-By` trailers) to commits, and always commit in small batches: one focused change per commit.
+Commit as you go: commit each change as soon as it is done, don't batch everything up for the end of a task.
 
 # AGENTS.md
 
