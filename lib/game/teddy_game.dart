@@ -28,6 +28,7 @@ class TeddyGame extends FlameGame {
   static const _catchDistance = 48.0;
   static const _honeyDistance = 40.0;
   static const _beesPerMonster = 3;
+  static const _buttonStrip = 130.0;
 
   static const _monsterColors = [
     Color(0xFF9B6BD6),
@@ -280,11 +281,13 @@ class TeddyGame extends FlameGame {
       other.position.distanceTo(teddy.position) < distance;
 
   Vector2 _randomFieldPoint() {
+    // Keep pickups out of the strip with the big bonus buttons.
+    final bottom = max(field.top, field.bottom - _buttonStrip);
     var point = Vector2.zero();
     for (var i = 0; i < 20; i++) {
       point = Vector2(
         field.left + _random.nextDouble() * field.width,
-        field.top + _random.nextDouble() * field.height,
+        field.top + _random.nextDouble() * (bottom - field.top),
       );
       if (point.distanceTo(teddy.position) > 120) break;
     }
