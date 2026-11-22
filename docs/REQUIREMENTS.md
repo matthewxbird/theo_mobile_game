@@ -39,9 +39,16 @@ Teddy can drop honey to make monsters slip over and disappear.
 
 ## Getting caught
 
-- **Never game over.** (kid's pick) When a monster catches Teddy, he **loses one lollipop** (never below 0).
+- **Never game over.** (kid's pick) When a monster catches Teddy, it **steals a lollipop and eats it** (never below 0). The lollipop flies into the monster's mouth with a "nom nom nom" and is gone for good.
 - Teddy then blinks and is safe for 2 seconds so he can get away.
 - The monster that caught him bounces back a little.
+
+## Hungry monsters (why you should deal with them)
+
+- **Each lollipop a monster eats makes it fatter and slower** (up to 3 lollipops' worth). It gets visibly wider and waddles.
+- The fat wears off over time (about 7 seconds per lollipop), so it speeds back up.
+- **The longer a monster goes without eating, the hungrier and faster it gets** (up to 40% faster after 20 seconds). Hungry monsters drool and jiggle faster.
+- So leaving monsters alone gets riskier: use honey or the beehive to get rid of them. Even the hungriest monster is still slower than Teddy.
 
 ## Levels
 
