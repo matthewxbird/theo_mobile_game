@@ -13,6 +13,7 @@ These three rules MUST always be followed:
 - `lib/game/teddy_game.dart`: game loop, spawning, pickups, catching. Uses simple distance checks, not Flame's collision system.
 - `lib/game/rules.dart`: every tuning number (speeds, counts, timers). Change difficulty here. Tested in `test/game_rules_test.dart`.
 - `lib/game/components/`: Teddy, monsters, sweets, honey. All art is drawn with `Canvas`; there are no image assets yet.
+- Sound effects: `lib/game/sfx.dart` (`Sfx.sweet.play()` etc., using `flame_audio` `AudioPool`s preloaded in `onLoad`). The WAVs in `assets/audio/` are generated from sine waves by `tool/generate_sounds.dart` (`dart run tool/generate_sounds.dart`): edit the script and rerun it to change a sound, don't hand-edit the WAVs.
 - Components are added straight to the game (screen coordinates), not to `world`, so there is no camera to think about.
 - Game state the HUD shows (`score`, `honey`) is exposed as `ValueNotifier`s on `TeddyGame`.
 
@@ -31,5 +32,7 @@ These three rules MUST always be followed:
 - Test device: Samsung Galaxy S24 FE (SM-S721B, adb id `R5CX92M56ZT`). Run with `flutter run -d R5CX92M56ZT`. Its logcat is very noisy (`I/GSC` lines).
 - `package:flutter/material.dart` is deprecated in Flutter 3.50 (analyzer warns, points to `material_ui`). The app uses only `package:flutter/widgets.dart`; keep it that way unless Material is really needed.
 - Screenshots from the phone: use the Bash tool, `adb exec-out screencap -p > shot.png`. PowerShell `>` corrupts the binary PNG. Simulate taps with `adb shell input tap X Y` (physical pixels; the S24 FE screen is 1080x2340).
+- To confirm a sound played on the phone without listening: `adb logcat -c`, trigger it, then grep logcat for `Received media started message`.
+- `python3` isn't available in Git Bash on this machine; write helper scripts in Dart (`tool/`) instead.
 - After adding a package, hot reload isn't enough: stop `flutter run` and start it again.
 - Phone only shows in `flutter devices` once USB debugging is on, USB mode is File transfer, and the RSA prompt is accepted.
