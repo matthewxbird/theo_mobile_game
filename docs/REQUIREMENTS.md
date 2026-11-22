@@ -46,10 +46,10 @@ Teddy can drop honey to make monsters slip over and disappear.
 
 ## Hats (kid's pick)
 
-- Every so often (about 25 seconds) a **special magic top hat** appears on the floor, twinkling.
+- **A new hat appears every 10 seconds whenever there isn't one on the floor** (a special magic top hat, twinkling).
 - Walk over it and Teddy puts it on (it drops onto his head with a bounce and a "ta-da!"). A pulsing yellow ring around him means "tap me".
 - **Tap Teddy** and he throws the spinning hat at the nearest bad guy. It lands over the bad guy's eyes; it panics ("yikes!") and runs off the screen. It's gone for good.
-- **Only one hat at a time**: no new hat appears while Teddy wears one, one is on the floor, or one is flying. If there are no bad guys, tapping Teddy keeps the hat on.
+- **Teddy wears only one hat at a time**: while he has one on, he walks straight past a hat on the floor. There's never more than one hat on the floor. If there are no bad guys, tapping Teddy keeps the hat on.
 
 ## Bad bats (kid's pick)
 
@@ -74,7 +74,8 @@ Teddy can drop honey to make monsters slip over and disappear.
 
 ## Levels
 
-- **Level 1 ends at 6 lollipops; each level needs 2 more** (8, 10, 12...).
+- **Level 1 ends at 6 lollipops; each level needs 2 more** (8, 10, 12, 14), **up to 16** from level 6 on, so later levels never drag on for a 5-year-old.
+- **New places every 3 levels:** meadow 🌼 (levels 1-3), beach 🏖️ (4-6, with rolling waves, shells and starfish), snow ❄️ (7-9, drifts and falling snowflakes), night 🌙 (10-12, moon and twinkling stars), then round again. The "Get ready" countdown shows the place. At night most bad guys are bats, in bright colours so they're easy to see.
 - The lollipop count shows progress for this level (e.g. `3/6`); a star badge shows the level.
 - Each level has one more monster (up to 3), and monsters get a bit faster, but always stay slower than Teddy.
 - Finishing a level makes all monsters flash and fade away.
