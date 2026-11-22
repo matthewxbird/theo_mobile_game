@@ -49,7 +49,28 @@ void main() {
   // Tapping a big menu button.
   write('tap.wav', sweep(from: 500, to: 900, seconds: 0.1, volume: 0.5));
 
+  // A monster eats a stolen lollipop: "nom nom nom".
+  write('munch.wav', munch());
+
   stdout.writeln('Sounds written to $outDir/');
+}
+
+List<double> munch() {
+  final random = Random(3);
+  final out = <double>[];
+  for (var chomp = 0; chomp < 3; chomp++) {
+    final count = (0.09 * sampleRate).round();
+    var phase = 0.0;
+    for (var n = 0; n < count; n++) {
+      final p = n / count;
+      final f = 260 - 120 * p;
+      phase += 2 * pi * f / sampleRate;
+      final crunch = (random.nextDouble() * 2 - 1) * 0.3;
+      out.add((0.6 * sin(phase) + crunch) * pow(1 - p, 2));
+    }
+    out.addAll(List.filled((0.05 * sampleRate).round(), 0.0));
+  }
+  return out;
 }
 
 List<double> buzz() {
