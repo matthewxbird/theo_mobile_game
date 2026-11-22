@@ -30,12 +30,21 @@ class GameRules {
 
   /// How often a new bad guy is a bad bat instead of a grumpy monster.
   static const batChance = 0.4;
+
+  /// Bats love the night: most bad guys are bats there.
+  static const batChanceAtNight = 0.8;
   static const firstMonsterDelay = 3.0;
   static const monsterRespawnDelay = 3.0;
   static const minMonsterSpawnDistance = 250.0;
 
-  /// Level 1 needs 6 lollipops, and each level after needs 2 more.
-  static int sweetsForLevel(int level) => 6 + 2 * (level - 1);
+  /// Level 1 needs 6 lollipops, and each level after needs 2 more,
+  /// up to [maxSweetsPerLevel] so later levels never drag on too long.
+  static int sweetsForLevel(int level) =>
+      min(maxSweetsPerLevel, 6 + 2 * (level - 1));
+  static const maxSweetsPerLevel = 16;
+
+  /// The playground changes to a new place every this many levels.
+  static const levelsPerPlace = 3;
 
   /// One monster on level 1, one more each level, up to the max.
   static int monstersFor(int level) => min(maxMonsters, level);

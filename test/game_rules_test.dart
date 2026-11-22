@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:theo_mobile_game/game/place.dart';
 import 'package:theo_mobile_game/game/rules.dart';
 
 void main() {
@@ -7,6 +8,20 @@ void main() {
       expect(GameRules.sweetsForLevel(1), 6);
       expect(GameRules.sweetsForLevel(2), 8);
       expect(GameRules.sweetsForLevel(3), 10);
+    });
+
+    test('lollipops needed stop growing so late levels stay short', () {
+      expect(GameRules.sweetsForLevel(6), GameRules.maxSweetsPerLevel);
+      expect(GameRules.sweetsForLevel(50), GameRules.maxSweetsPerLevel);
+    });
+
+    test('the place changes every 3 levels and goes round', () {
+      expect(Place.forLevel(1), Place.meadow);
+      expect(Place.forLevel(3), Place.meadow);
+      expect(Place.forLevel(4), Place.beach);
+      expect(Place.forLevel(7), Place.snow);
+      expect(Place.forLevel(10), Place.night);
+      expect(Place.forLevel(13), Place.meadow);
     });
 
     test('one more monster each level, never more than the max', () {
