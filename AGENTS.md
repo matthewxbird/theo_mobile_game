@@ -1,6 +1,8 @@
-Always write back learnings: when you discover something non-obvious about this project (setup gotchas, build fixes, device quirks, conventions), add it to the Learnings section below before finishing your task.
-Never add a co-author (no `Co-Authored-By` trailers) to commits, and always commit in small batches: one focused change per commit.
-Commit as you go: commit each change as soon as it is done, don't batch everything up for the end of a task.
+These three rules MUST always be followed:
+
+1. **Never attribute to AI.** No `Co-Authored-By` trailers, "Generated with" lines, or any AI/agent mention in commits, PRs, code comments or docs.
+2. **Always write back learnings.** When you discover something non-obvious about this project (setup gotchas, build fixes, device quirks, conventions), add it to the Learnings section below before finishing your task.
+3. **Always commit and push as you go.** Commit each change as soon as it is done, in small batches (one focused change per commit), and push to `origin` straight after. Don't batch everything up for the end of a task.
 
 # AGENTS.md
 
