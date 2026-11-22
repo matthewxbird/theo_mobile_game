@@ -18,6 +18,7 @@ These three rules MUST always be followed:
 - Screens are driven by `TeddyGame.phase` (`menu` → `ready` → `playing` → `levelComplete`). Game logic only runs while `playing`. `lib/main.dart` switches between Flutter overlays (`lib/ui/start_screen.dart`, `get_ready.dart`, `level_complete.dart`) on top of the `GameWidget`.
 - Teddy art is shared: `paintTeddy()` in `lib/game/teddy_colour.dart` is used by both the game component and the menus (`TeddyPicture`).
 - Leaderboard: `lib/game/leaderboard.dart`, stored with `shared_preferences` (best level per teddy colour). Check it on the phone with `adb shell run-as com.theo.theo_mobile_game cat shared_prefs/FlutterSharedPreferences.xml`.
+- Big celebratory animations (e.g. honey-to-bee, `lib/ui/honey_to_bee.dart`) are Flutter overlays, not Flame components. The game bumps a `ValueNotifier<int>` event counter (`honeyTurnedIntoBee`) and the overlay plays when it changes. Any reward the animation delivers is applied by the game on a timer (`_beesOnTheWay`), so it still lands if the screen changes mid-animation.
 - HUD button and badge sizes live in `lib/game/layout.dart` (`HudLayout`). The HUD draws with them, and the game uses them to keep pickups out from under the buttons. Change sizes there, never as literals in the widgets.
 - Components are added straight to the game (screen coordinates), not to `world`, so there is no camera to think about.
 - Game state the HUD shows (`score`, `honey`) is exposed as `ValueNotifier`s on `TeddyGame`.
