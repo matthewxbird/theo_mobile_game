@@ -9,7 +9,7 @@ import '../teddy_colour.dart';
 /// The hero. Walks to wherever he is told to go.
 class Teddy extends PositionComponent {
   Teddy({required super.position})
-      : super(size: Vector2.all(76), anchor: Anchor.center, priority: 3);
+    : super(size: Vector2.all(76), anchor: Anchor.center, priority: 3);
 
   TeddyColour colour = TeddyColour.brown;
 

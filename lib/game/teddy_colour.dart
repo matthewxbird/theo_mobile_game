@@ -21,11 +21,12 @@ void paintTeddy(Canvas canvas, Color furColour) {
   final fur = Paint()..color = furColour;
   final light = Paint()..color = const Color(0xFFF3DCC2);
   final dark = Paint()..color = const Color(0xFF3B2314);
-  final smile = Paint()
-    ..color = const Color(0xFF3B2314)
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 2
-    ..strokeCap = StrokeCap.round;
+  final smile =
+      Paint()
+        ..color = const Color(0xFF3B2314)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round;
 
   // Feet and arms.
   canvas.drawCircle(const Offset(28, 70), 7, fur);

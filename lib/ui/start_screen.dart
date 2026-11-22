@@ -62,11 +62,12 @@ class _StartScreenState extends State<StartScreen> {
             ),
             ValueListenableBuilder<Map<TeddyColour, int>>(
               valueListenable: widget.leaderboard.best,
-              builder: (context, _, _) => _TeddyChooser(
-                chosen: _chosen,
-                leaderboard: widget.leaderboard,
-                onChoose: _choose,
-              ),
+              builder:
+                  (context, _, _) => _TeddyChooser(
+                    chosen: _chosen,
+                    leaderboard: widget.leaderboard,
+                    onChoose: _choose,
+                  ),
             ),
             const SizedBox(height: 28),
             PulsingButton(
@@ -110,14 +111,16 @@ class _TeddyChooser extends StatelessWidget {
               width: 104,
               padding: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
-                color: colour == chosen
-                    ? const Color(0xFFFFFFFF)
-                    : const Color(0x88FFFFFF),
+                color:
+                    colour == chosen
+                        ? const Color(0xFFFFFFFF)
+                        : const Color(0x88FFFFFF),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: colour == chosen
-                      ? const Color(0xFFFFC107)
-                      : const Color(0x00000000),
+                  color:
+                      colour == chosen
+                          ? const Color(0xFFFFC107)
+                          : const Color(0x00000000),
                   width: 5,
                 ),
               ),

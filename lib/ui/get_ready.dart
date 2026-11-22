@@ -75,22 +75,26 @@ class _GetReadyState extends State<GetReady> {
           const SizedBox(height: 24),
           SizedBox(
             height: 180,
-            child: _step < 0
-                ? null
-                : PopIn(
-                    key: ValueKey(_step),
-                    child: Text(
-                      _steps[_step],
-                      style: TextStyle(
-                        fontSize: _step == _steps.length - 1 ? 110 : 150,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFFFFFFFF),
-                        shadows: const [
-                          Shadow(color: Color(0xFFFF9800), offset: Offset(5, 5)),
-                        ],
+            child:
+                _step < 0
+                    ? null
+                    : PopIn(
+                      key: ValueKey(_step),
+                      child: Text(
+                        _steps[_step],
+                        style: TextStyle(
+                          fontSize: _step == _steps.length - 1 ? 110 : 150,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFFFFFFFF),
+                          shadows: const [
+                            Shadow(
+                              color: Color(0xFFFF9800),
+                              offset: Offset(5, 5),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
           ),
         ],
       ),

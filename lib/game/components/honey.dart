@@ -36,7 +36,7 @@ class HoneyJar extends Pickup {
 /// A sticky puddle. The first monster to step in it slips over.
 class HoneyPuddle extends PositionComponent {
   HoneyPuddle({required super.position})
-      : super(size: Vector2(76, 46), anchor: Anchor.center, priority: 0);
+    : super(size: Vector2(76, 46), anchor: Anchor.center, priority: 0);
 
   static final _honey = Paint()..color = const Color(0xDDF5B700);
   static final _shine = Paint()..color = const Color(0x77FFFFFF);

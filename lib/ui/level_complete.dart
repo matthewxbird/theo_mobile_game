@@ -109,8 +109,10 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
                 PopIn(
                   delay: const Duration(milliseconds: 1600),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xDDFFFFFF),
                       borderRadius: BorderRadius.circular(40),

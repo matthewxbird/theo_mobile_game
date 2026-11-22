@@ -49,10 +49,7 @@ class GameRules {
   }) {
     final hunger = maxHungerBoost * min(1.0, secondsHungry / hungerSeconds);
     final fat = 1 / (1 + 0.35 * fatness.clamp(0, maxFatness));
-    return min(
-      teddySpeed * 0.8,
-      monsterSpeedFor(level) * (1 + hunger) * fat,
-    );
+    return min(teddySpeed * 0.8, monsterSpeedFor(level) * (1 + hunger) * fat);
   }
 
   /// When caught, Teddy loses a lollipop, but never goes below 0.

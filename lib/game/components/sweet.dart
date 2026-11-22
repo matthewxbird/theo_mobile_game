@@ -6,8 +6,8 @@ import 'pickup.dart';
 /// A lollipop. Each one is a point.
 class Sweet extends Pickup {
   Sweet({required super.position, required Color color})
-      : _candy = Paint()..color = color,
-        super(size: 40);
+    : _candy = Paint()..color = color,
+      super(size: 40);
 
   static const colors = [
     Color(0xFFE53935),
@@ -17,15 +17,17 @@ class Sweet extends Pickup {
     Color(0xFFFF9800),
   ];
 
-  static final _stick = Paint()
-    ..color = const Color(0xFFFFFFFF)
-    ..strokeWidth = 4
-    ..strokeCap = StrokeCap.round;
-  static final _swirl = Paint()
-    ..color = const Color(0xCCFFFFFF)
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 3
-    ..strokeCap = StrokeCap.round;
+  static final _stick =
+      Paint()
+        ..color = const Color(0xFFFFFFFF)
+        ..strokeWidth = 4
+        ..strokeCap = StrokeCap.round;
+  static final _swirl =
+      Paint()
+        ..color = const Color(0xCCFFFFFF)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..strokeCap = StrokeCap.round;
 
   final Paint _candy;
 

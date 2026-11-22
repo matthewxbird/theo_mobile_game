@@ -57,7 +57,8 @@ class _TeddyPictureState extends State<TeddyPicture>
       builder: (context, _) {
         final t = _controller.value * 2 * pi;
         final wiggle = widget.dancing ? sin(t) * 0.18 : 0.0;
-        final hop = widget.dancing ? -sin(t * 2).abs() * widget.size * 0.12 : 0.0;
+        final hop =
+            widget.dancing ? -sin(t * 2).abs() * widget.size * 0.12 : 0.0;
         return Transform.translate(
           offset: Offset(0, hop),
           child: Transform.rotate(
@@ -132,7 +133,8 @@ class _PulsingButtonState extends State<PulsingButton>
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          final pulse = 1 + 0.07 * Curves.easeInOut.transform(_controller.value);
+          final pulse =
+              1 + 0.07 * Curves.easeInOut.transform(_controller.value);
           return Transform.scale(scale: _pressed ? 0.9 : pulse, child: child);
         },
         child: Container(
@@ -191,10 +193,11 @@ class _ConfettiState extends State<Confetti>
     return IgnorePointer(
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, _) => CustomPaint(
-          size: Size.infinite,
-          painter: _ConfettiPainter(_pieces, _controller.value),
-        ),
+        builder:
+            (context, _) => CustomPaint(
+              size: Size.infinite,
+              painter: _ConfettiPainter(_pieces, _controller.value),
+            ),
       ),
     );
   }
@@ -202,12 +205,12 @@ class _ConfettiState extends State<Confetti>
 
 class _Piece {
   _Piece(Random random)
-      : x = random.nextDouble(),
-        start = random.nextDouble(),
-        speed = 0.6 + random.nextDouble() * 0.8,
-        spin = random.nextDouble() * 10,
-        sway = random.nextDouble() * 2 * pi,
-        color = _colors[random.nextInt(_colors.length)];
+    : x = random.nextDouble(),
+      start = random.nextDouble(),
+      speed = 0.6 + random.nextDouble() * 0.8,
+      spin = random.nextDouble() * 10,
+      sway = random.nextDouble() * 2 * pi,
+      color = _colors[random.nextInt(_colors.length)];
 
   static const _colors = [
     Color(0xFFE53935),

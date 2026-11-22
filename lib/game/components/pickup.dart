@@ -7,7 +7,7 @@ import 'package:flutter/animation.dart';
 /// Something Teddy picks up by walking over it. Pops in and pops out.
 abstract class Pickup extends PositionComponent {
   Pickup({required super.position, required double size})
-      : super(size: Vector2.all(size), anchor: Anchor.center, priority: 1);
+    : super(size: Vector2.all(size), anchor: Anchor.center, priority: 1);
 
   double _time = 0;
   bool collected = false;

@@ -9,16 +9,17 @@ import 'monster.dart';
 /// A bee from the beehive. Zooms (wobbling) to a monster and stings it.
 class Bee extends PositionComponent {
   Bee({required super.position, required this.target, required double delay})
-      : _delay = delay,
-        super(size: Vector2(30, 24), anchor: Anchor.center, priority: 4);
+    : _delay = delay,
+      super(size: Vector2(30, 24), anchor: Anchor.center, priority: 4);
 
   static const _speed = 420.0;
   static const _stingDistance = 20.0;
 
   static final _body = Paint()..color = const Color(0xFFFFD54F);
-  static final _stripe = Paint()
-    ..color = const Color(0xFF212121)
-    ..strokeWidth = 3.5;
+  static final _stripe =
+      Paint()
+        ..color = const Color(0xFF212121)
+        ..strokeWidth = 3.5;
   static final _wing = Paint()..color = const Color(0xCCFFFFFF);
   static final _eye = Paint()..color = const Color(0xFF212121);
 
