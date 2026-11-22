@@ -46,5 +46,8 @@ These three rules MUST always be followed:
 - The Bash tool blocks `sleep N && ...`. Wait on the `flutter run` terminal output instead, or put the delay inside a script.
 - To ship a code change to the phone without wiping someone's game, press `r` (hot reload, keeps state) in the `flutter run` terminal, not `R` or a restart. Agents can't type into a running terminal tab, so ask the user to press it.
 - New sound files need a full restart, not hot reload: `Sfx.load()` only runs in `onLoad`. Check they loaded with `adb logcat -d | grep -o "getDuration: [0-9]* (msec)" | sort -u` (one line per sound).
+- Don't use `perl -0pi` with `|` alternation in the pattern to edit Dart: a stray empty alternative matched at the top of `teddy_game.dart` and mangled it. Use the Edit tool for multi-line changes.
+- To see a component's drawing without playing to that level (e.g. a late-level place), copy a throwaway test into `test/` that calls its `render` on a `PictureRecorder` and writes a PNG, run it by path, then delete it.
+- Places (`lib/game/place.dart`) change every `GameRules.levelsPerPlace` levels; `Playground` draws the floor and decorations for the current place.
 - After adding a package, hot reload isn't enough: stop `flutter run` and start it again.
 - Phone only shows in `flutter devices` once USB debugging is on, USB mode is File transfer, and the RSA prompt is accepted.
