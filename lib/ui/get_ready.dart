@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
+import '../game/place.dart';
 import '../game/sfx.dart';
 import 'fun_widgets.dart';
 
@@ -63,7 +64,7 @@ class _GetReadyState extends State<GetReady> {
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Text(
-                '⭐ Level ${widget.level}',
+                '${Place.forLevel(widget.level).emoji} Level ${widget.level}',
                 style: const TextStyle(
                   fontSize: 44,
                   fontWeight: FontWeight.w900,
