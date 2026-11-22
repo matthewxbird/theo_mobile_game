@@ -99,7 +99,7 @@ class TeddyGame extends FlameGame {
     _beesOnTheWay.clear();
     _clearBoard();
     // A new game starts with no hat anywhere.
-    teddy.hasHat = false;
+    teddy.takeOff();
     for (final hat in children.whereType<HatPickup>().toList()) {
       hat.removeFromParent();
     }
@@ -140,7 +140,7 @@ class TeddyGame extends FlameGame {
     // A hat still in the air when the level ends comes back to Teddy.
     for (final hat in children.whereType<ThrownHat>().toList()) {
       hat.removeFromParent();
-      teddy.hasHat = true;
+      teddy.putOn(hat.gift);
     }
     teddy.resetTo(size / 2);
   }
@@ -176,8 +176,15 @@ class TeddyGame extends FlameGame {
     final target = nearestMonsterTo(teddy.position);
     // Nobody to throw at: keep the hat on.
     if (target == null) return;
-    teddy.throwHat();
-    add(ThrownHat(position: teddy.position - Vector2(0, 30), target: target));
+    final gift = teddy.throwHat();
+    if (gift == null) return;
+    add(
+      ThrownHat(
+        position: teddy.position - Vector2(0, 30),
+        target: target,
+        gift: gift,
+      ),
+    );
     Sfx.whoosh.play();
     HapticFeedback.mediumImpact();
   }
@@ -266,7 +273,10 @@ class TeddyGame extends FlameGame {
     _hatTimer -= dt;
     if (_hatTimer > 0) return;
     _hatTimer = GameRules.hatInterval;
-    add(HatPickup(position: _randomFieldPoint()));
+    // Sometimes it's a ribbon instead of a hat.
+    final gift =
+        _random.nextDouble() < GameRules.ribbonChance ? Gift.ribbon : Gift.hat;
+    add(HatPickup(position: _randomFieldPoint(), gift: gift));
   }
 
   void _levelComplete() {
@@ -305,7 +315,7 @@ class TeddyGame extends FlameGame {
         continue;
       }
       hat.collect();
-      teddy.hasHat = true;
+      teddy.putOn(hat.gift);
       Sfx.tada.play();
       HapticFeedback.selectionClick();
     }

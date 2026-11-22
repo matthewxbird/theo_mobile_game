@@ -43,15 +43,20 @@ class Teddy extends PositionComponent {
   double _blink = 0;
   Offset _look = Offset.zero;
 
-  bool _hasHat = false;
+  /// The hat or ribbon being worn, if any. Tap the hero to throw it.
+  Gift? wearing;
 
-  /// Wearing the special hat? Tap Teddy to throw it at a monster.
-  bool get hasHat => _hasHat;
-  set hasHat(bool value) {
-    // Putting a hat on: it drops onto his head with a bounce.
-    if (value && !_hasHat) _hatDrop = _hatDropTime;
-    _hasHat = value;
+  /// Wearing a hat or ribbon? (Only ever one at a time.)
+  bool get hasHat => wearing != null;
+
+  /// Put on a hat or ribbon: it drops onto the head with a bounce.
+  void putOn(Gift gift) {
+    if (wearing == null) _hatDrop = _hatDropTime;
+    wearing = gift;
   }
+
+  /// Take off whatever's being worn, without throwing it.
+  void takeOff() => wearing = null;
 
   bool get isSafe => _safeTime > 0;
   bool get isMoving => _target != null;
@@ -63,10 +68,12 @@ class Teddy extends PositionComponent {
   /// A little hop for joy (picking something up).
   void celebrate() => _hop = _hopTime;
 
-  /// Swing his arms up and fling the hat.
-  void throwHat() {
-    _hasHat = false;
-    _throw = _throwTime;
+  /// Swing the arms up and fling the hat or ribbon. Returns what was thrown.
+  Gift? throwHat() {
+    final thrown = wearing;
+    wearing = null;
+    if (thrown != null) _throw = _throwTime;
+    return thrown;
   }
 
   /// Stand still at [point], ready for a new level.
@@ -180,11 +187,12 @@ class Teddy extends PositionComponent {
       step: isMoving ? walkCycle : 0,
       arms: arms,
     );
-    if (hasHat) _paintHat(canvas, tilt);
+    final gift = wearing;
+    if (gift != null) _paintHat(canvas, gift, tilt);
     canvas.restore();
   }
 
-  void _paintHat(Canvas canvas, double tilt) {
+  void _paintHat(Canvas canvas, Gift gift, double tilt) {
     // Drops onto his head with a springy bounce.
     var drop = 0.0;
     var stretch = 1.0;
@@ -199,7 +207,13 @@ class Teddy extends PositionComponent {
     canvas.translate(38, critter.hatY + drop);
     canvas.rotate(sway);
     canvas.scale(stretch, 2 - stretch);
-    paintHat(canvas, Offset.zero, scale: 0.9);
+    switch (gift) {
+      case Gift.hat:
+        paintHat(canvas, Offset.zero, scale: 0.9);
+      case Gift.ribbon:
+        // A bow worn jauntily on one side of the head.
+        paintRibbon(canvas, const Offset(12, -2), scale: 0.8);
+    }
     canvas.restore();
   }
 }

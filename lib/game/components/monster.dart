@@ -58,6 +58,7 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
   static const _emergeTime = 0.7;
   static const _closeDistance = 140.0;
   static final _sting = Paint()..color = const Color(0xFFE53935);
+  static final _ribbon = Paint()..color = const Color(0xFFEC407A);
   static final _dizzy = Paint()..color = const Color(0xFFFFEB3B);
   static final _dust = Paint();
 
@@ -89,8 +90,26 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
   bool _blinded = false;
   Vector2 _runDirection = Vector2(1, 0);
 
+  /// Tied up in a ribbon: struggles, falls over, flashes away.
+  bool _tied = false;
+  double _tiedTime = 0;
+  double _fallSide = 1;
+
+  static const _struggleTime = 0.5;
+  static const _toppleTime = 0.4;
+  static const _tiedFlashTime = 1.1;
+
   /// Chasing monsters can catch Teddy, fall into honey and get stung.
-  bool get isChasing => !_slipping && !_fading && !_blinded;
+  bool get isChasing => !_slipping && !_fading && !_blinded && !_tied;
+
+  /// Teddy's ribbon wraps around it and ties a bow! It wriggles, falls
+  /// over, then flashes out of the game.
+  void tieUpWithRibbon() {
+    if (!isChasing) return;
+    _tied = true;
+    _fallSide = _random.nextBool() ? 1 : -1;
+    Sfx.tied.play();
+  }
 
   /// Teddy's hat lands over its eyes! It can't see, so it runs off screen.
   void coverEyesWithHat() {
@@ -164,6 +183,24 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
       return;
     }
 
+    if (_tied) {
+      _tiedTime += dt;
+      if (_tiedTime < _struggleTime) {
+        // Wriggling against the ribbon.
+        angle = sin(_tiedTime * 40) * 0.15;
+      } else if (_tiedTime < _struggleTime + _toppleTime) {
+        // Timber! Topple over sideways.
+        final p = (_tiedTime - _struggleTime) / _toppleTime;
+        angle = _fallSide * pi / 2 * Curves.easeIn.transform(p);
+      } else {
+        angle = _fallSide * pi / 2;
+      }
+      if (_tiedTime > _struggleTime + _toppleTime + _tiedFlashTime) {
+        removeFromParent();
+      }
+      return;
+    }
+
     if (_blinded) {
       // Zig-zag panic run until it's off the screen.
       final sideways = Vector2(-_runDirection.y, _runDirection.x);
@@ -229,6 +266,14 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
 
   @override
   void render(Canvas canvas) {
+    if (_tied) {
+      // Flash on and off once it has fallen over.
+      final flashing = _tiedTime > _struggleTime + _toppleTime;
+      if (flashing && (_tiedTime * 12).floor().isOdd) return;
+      _draw(canvas);
+      _drawRibbonWrap(canvas);
+      return;
+    }
     if (_fading) {
       // Flash on and off, then fade out.
       if (_fadeTime < _flashTime) {
@@ -437,6 +482,20 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
         );
       }
     }
+  }
+
+  /// A ribbon wound around the body, finished with a big bow on top.
+  void _drawRibbonWrap(Canvas canvas) {
+    canvas.save();
+    canvas.translate(32, 36);
+    for (final tilt in const [-0.35, 0.35]) {
+      canvas.save();
+      canvas.rotate(tilt);
+      canvas.drawRect(const Rect.fromLTWH(-30, -4, 60, 8), _ribbon);
+      canvas.restore();
+    }
+    canvas.restore();
+    paintRibbon(canvas, const Offset(32, 10), scale: 1.1);
   }
 
   /// A bad bat: flapping wings, pointy ears, tiny feet and fangs.

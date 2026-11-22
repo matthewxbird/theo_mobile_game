@@ -17,6 +17,9 @@ class GameRules {
   /// Teddy can still only wear one hat at a time.
   static const hatInterval = 10.0;
 
+  /// How often the special pickup is a ribbon instead of a hat.
+  static const ribbonChance = 0.4;
+
   /// Tap this close to Teddy to throw his hat.
   static const hatTapDistance = 60.0;
 
