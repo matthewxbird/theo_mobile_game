@@ -67,4 +67,4 @@ Teddy can drop honey to make monsters slip over and disappear.
 
 - Is 3 honey pots to start the right number?
 - What does a "sweet" look like: lollipops, wrapped sweets, cupcakes, a mix?
-- Should the game have music, or only sound effects?
+- Should the game have music too? Sound effects are in: a bling for sweets, a tune for honey jars, a bloop for dropping honey, a whoops-and-pop for slipping monsters, and a boing when caught.
