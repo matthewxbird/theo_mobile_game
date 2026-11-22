@@ -44,6 +44,27 @@ Teddy can drop honey to make monsters slip over and disappear.
 - Teddy then blinks and is safe for 2 seconds so he can get away.
 - The monster that caught him bounces back a little.
 
+## Hats (kid's pick)
+
+- Every so often (about 25 seconds) a **special magic top hat** appears on the floor, twinkling.
+- Walk over it and Teddy puts it on (it drops onto his head with a bounce and a "ta-da!"). A pulsing yellow ring around him means "tap me".
+- **Tap Teddy** and he throws the spinning hat at the nearest bad guy. It lands over the bad guy's eyes; it panics ("yikes!") and runs off the screen. It's gone for good.
+- **Only one hat at a time**: no new hat appears while Teddy wears one, one is on the floor, or one is flying. If there are no bad guys, tapping Teddy keeps the hat on.
+
+## Bad bats (kid's pick)
+
+- About 2 in 5 new bad guys are **bad bats** instead of grumpy monsters: flapping wings, pointy ears, little fangs. They bob as they fly and swoop from side to side.
+- Bats follow all the same rules: they steal and eat lollipops, get fat and hungry, slip in honey, get stung by bees, and run away blinded by the hat.
+
+## Animation
+
+- **Teddy:** waddles and bounces when walking, breathes when standing, blinks, looks where he's going, rosy cheeks, hops for joy with a big grin on every pickup, leans back and flings the hat, makes an "oh!" face when caught. His hat sways as he walks.
+- **Bad guys:** pop out of the ground in a dust puff (bats swoop in), eyes follow Teddy and blink, waddle when fat, tummy-rumble shake when starving, open mouth and teeth when close to Teddy, smug grin after a catch, dizzy stars and X eyes when slipping, red bumps when stung.
+
+## App icon
+
+- Happy Teddy in his magic hat holding a lollipop, on the sky-and-grass background. Drawn from the game's own art.
+
 ## Hungry monsters (why you should deal with them)
 
 - **Each lollipop a monster eats makes it fatter and slower** (up to 3 lollipops' worth). It gets visibly wider and waddles.
