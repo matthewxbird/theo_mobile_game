@@ -13,6 +13,8 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
 
   static const _slipWobbleTime = 0.6;
   static const _slipShrinkTime = 0.3;
+  static const _flashTime = 0.8;
+  static const _fadeOutTime = 0.5;
   static const _bounceTime = 0.35;
   static const _bounceSpeed = 260.0;
 
@@ -33,14 +35,23 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
   double _time = 0;
   double _slipTime = 0;
   bool _slipping = false;
+  double _fadeTime = 0;
+  bool _fading = false;
   double _bounceLeft = 0;
   Vector2 _bounceDirection = Vector2(1, 0);
 
-  /// Chasing monsters can catch Teddy and fall into honey.
-  bool get isChasing => !_slipping;
+  /// Chasing monsters can catch Teddy, fall into honey and get stung.
+  bool get isChasing => !_slipping && !_fading;
 
   /// Whoops! Slip over in the honey and disappear.
-  void slip() => _slipping = true;
+  void slip() {
+    if (isChasing) _slipping = true;
+  }
+
+  /// Stung by bees (or the level is over): flash, then fade away.
+  void flashAndFade() {
+    if (isChasing) _fading = true;
+  }
 
   /// Bounce back a little after catching Teddy.
   void bounceAwayFrom(Vector2 point) {
@@ -63,6 +74,12 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
       return;
     }
 
+    if (_fading) {
+      _fadeTime += dt;
+      if (_fadeTime >= _flashTime + _fadeOutTime) removeFromParent();
+      return;
+    }
+
     if (_bounceLeft > 0) {
       _bounceLeft -= dt;
       position.add(_bounceDirection * (_bounceSpeed * dt));
@@ -78,9 +95,29 @@ class Monster extends PositionComponent with HasGameReference<TeddyGame> {
 
   @override
   void render(Canvas canvas) {
+    if (_fading) {
+      // Flash on and off, then fade out.
+      if (_fadeTime < _flashTime) {
+        if ((_fadeTime * 12).floor().isOdd) return;
+        _draw(canvas);
+        return;
+      }
+      final opacity = 1 - (_fadeTime - _flashTime) / _fadeOutTime;
+      canvas.saveLayer(
+        null,
+        Paint()..color = Color.fromRGBO(0, 0, 0, opacity.clamp(0.0, 1.0)),
+      );
+      _draw(canvas);
+      canvas.restore();
+      return;
+    }
+    _draw(canvas);
+  }
+
+  void _draw(Canvas canvas) {
     canvas.save();
     // Squishy walk.
-    final squish = _slipping ? 0.0 : sin(_time * 10) * 0.05;
+    final squish = isChasing ? sin(_time * 10) * 0.05 : 0.0;
     canvas.translate(32, 64);
     canvas.scale(1 - squish, 1 + squish);
     canvas.translate(-32, -64);

@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'game/rules.dart';
 import 'game/teddy_game.dart';
 import 'ui/hud.dart';
 
@@ -35,7 +36,26 @@ class _TeddyAppState extends State<TeddyApp> {
                 Positioned(
                   top: 16,
                   left: 16,
-                  child: IgnorePointer(child: ScoreBadge(score: _game.score)),
+                  child: IgnorePointer(
+                    child: ScoreBadge(
+                      score: _game.score,
+                      level: _game.level,
+                      needed: GameRules.sweetsForLevel,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: IgnorePointer(child: LevelBadge(level: _game.level)),
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: LevelUpBanner(
+                      showing: _game.celebrating,
+                      level: _game.level,
+                    ),
+                  ),
                 ),
                 Positioned(
                   right: 24,

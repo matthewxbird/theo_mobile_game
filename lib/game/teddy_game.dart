@@ -32,12 +32,20 @@ class TeddyGame extends FlameGame {
   ];
 
   final Random _random;
+  /// Lollipops collected on this level.
   final score = ValueNotifier<int>(0);
+  final level = ValueNotifier<int>(1);
   final honey = ValueNotifier<int>(GameRules.startingHoney);
+
+  /// True while the "Level up!" banner is showing.
+  final celebrating = ValueNotifier<bool>(false);
 
   late final Teddy teddy;
   double _monsterTimer = GameRules.firstMonsterDelay;
   double _honeyJarTimer = GameRules.honeyJarInterval;
+  double _celebrationLeft = 0;
+
+  int get sweetsNeeded => GameRules.sweetsForLevel(level.value);
 
   @override
   Color backgroundColor() => const Color(0xFFB7E4A0);
@@ -79,8 +87,28 @@ class TeddyGame extends FlameGame {
     super.update(dt);
     _collectPickups();
     _updateMonsters();
-    _spawnMonsters(dt);
+    _updateCelebration(dt);
+    if (!celebrating.value) _spawnMonsters(dt);
     _spawnHoneyJars(dt);
+  }
+
+  void _levelUp() {
+    level.value++;
+    score.value = 0;
+    for (final monster in children.whereType<Monster>()) {
+      monster.flashAndFade();
+    }
+    _celebrationLeft = GameRules.levelUpCelebrationSeconds;
+    celebrating.value = true;
+    _monsterTimer = GameRules.firstMonsterDelay;
+    Sfx.levelUp.play();
+    HapticFeedback.heavyImpact();
+  }
+
+  void _updateCelebration(double dt) {
+    if (!celebrating.value) return;
+    _celebrationLeft -= dt;
+    if (_celebrationLeft <= 0) celebrating.value = false;
   }
 
   void _collectPickups() {
@@ -90,6 +118,7 @@ class TeddyGame extends FlameGame {
       score.value++;
       Sfx.sweet.play();
       HapticFeedback.selectionClick();
+      if (score.value >= sweetsNeeded) _levelUp();
     }
     final sweetsLeft =
         children.whereType<Sweet>().where((s) => !s.collected).length;
@@ -107,7 +136,7 @@ class TeddyGame extends FlameGame {
   }
 
   void _updateMonsters() {
-    final speed = GameRules.monsterSpeedFor(score.value);
+    final speed = GameRules.monsterSpeedFor(level.value);
     final puddles = children.whereType<HoneyPuddle>().toList();
     for (final monster in children.whereType<Monster>().toList()) {
       if (!monster.isChasing) continue;
@@ -130,15 +159,7 @@ class TeddyGame extends FlameGame {
   }
 
   void _caught(Monster monster) {
-    final dropped = GameRules.sweetsDroppedOnCatch(score.value);
-    score.value -= dropped;
-    for (var i = 0; i < dropped; i++) {
-      final angle = _random.nextDouble() * 2 * pi;
-      final distance = 90 + _random.nextDouble() * 40;
-      _spawnSweet(
-        at: teddy.position + Vector2(cos(angle), sin(angle)) * distance,
-      );
-    }
+    score.value -= GameRules.sweetsLostWhenCaught(score.value);
     teddy.makeSafe();
     monster.bounceAwayFrom(teddy.position);
     Sfx.caught.play();
@@ -147,7 +168,7 @@ class TeddyGame extends FlameGame {
 
   void _spawnMonsters(double dt) {
     final chasing = children.whereType<Monster>().where((m) => m.isChasing);
-    if (chasing.length >= GameRules.monstersFor(score.value)) {
+    if (chasing.length >= GameRules.monstersFor(level.value)) {
       _monsterTimer = max(_monsterTimer, GameRules.monsterRespawnDelay);
       return;
     }
@@ -171,10 +192,10 @@ class TeddyGame extends FlameGame {
     add(HoneyJar(position: _randomFieldPoint()));
   }
 
-  void _spawnSweet({Vector2? at}) {
+  void _spawnSweet() {
     add(
       Sweet(
-        position: at != null ? clampToField(at) : _randomFieldPoint(),
+        position: _randomFieldPoint(),
         color: Sweet.colors[_random.nextInt(Sweet.colors.length)],
       ),
     );
