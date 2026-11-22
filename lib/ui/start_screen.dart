@@ -45,7 +45,7 @@ class _StartScreenState extends State<StartScreen> {
             const SizedBox(height: 24),
             const PopIn(
               child: Text(
-                '🍭 Teddy\'s 🍭\nSweet Run',
+                '🍭 Theo\'s 🍭\nSweet Run',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 44,

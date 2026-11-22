@@ -8,7 +8,7 @@ These three rules MUST always be followed:
 
 ## Project
 
-- "Teddy's Sweet Run": a Flutter + Flame game for a 4-year-old, targets Android and iOS. Requirements: `docs/REQUIREMENTS.md`.
+- "Theo's Sweet Run": a Flutter + Flame game for a 4-year-old, targets Android and iOS. Requirements: `docs/REQUIREMENTS.md`.
 - `lib/main.dart`: app shell; Flutter widgets HUD (`lib/ui/hud.dart`) stacked over the `GameWidget`.
 - `lib/game/teddy_game.dart`: game loop, spawning, pickups, catching. Uses simple distance checks, not Flame's collision system.
 - Monster speed = level speed × hunger boost ÷ fatness (`GameRules.monsterSpeed`). Fatness and hunger live on each `Monster` and change in its `update`. Stolen lollipops are `StolenLolly` components that call `monster.eat()` when they arrive.

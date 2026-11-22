@@ -1,4 +1,4 @@
-# Teddy's Sweet Run: Requirements
+# Theo's Sweet Run: Requirements
 
 A simple game for a 4-year-old, made to spark an interest in programming.
 Decisions marked **(kid's pick)** were picked by our player. Others are sensible defaults we can change.
