@@ -49,6 +49,10 @@ void main() {
       }
     });
 
+    test('you start with less honey than it takes to make a bee', () {
+      expect(GameRules.startingHoney, lessThan(GameRules.honeyForBeehive));
+    });
+
     test('getting caught loses one lollipop, never going below zero', () {
       expect(GameRules.sweetsLostWhenCaught(0), 0);
       expect(GameRules.sweetsLostWhenCaught(1), 1);

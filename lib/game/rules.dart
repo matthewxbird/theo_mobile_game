@@ -5,7 +5,11 @@ class GameRules {
   static const teddySpeed = 230.0;
 
   static const startingHoney = 3;
-  static const maxHoney = 5;
+  /// Collecting this many honey pots turns them into one beehive.
+  static const honeyForBeehive = 4;
+
+  /// How long the honey-to-bee animation takes before the bee arrives.
+  static const honeyToBeeSeconds = 1.8;
   static const honeyJarInterval = 12.0;
 
   static const sweetsOnScreen = 3;

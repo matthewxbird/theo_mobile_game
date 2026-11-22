@@ -45,8 +45,16 @@ class TeddyGame extends FlameGame {
   final level = ValueNotifier<int>(1);
   final honey = ValueNotifier<int>(GameRules.startingHoney);
 
-  /// Beehives to use. You get one each time you finish a level.
+  /// Beehives to use. You get one each time you finish a level, and one
+  /// every time 4 honey pots magically turn into a bee.
   final beehives = ValueNotifier<int>(0);
+
+  /// Goes up by one each time honey turns into a bee, so the HUD can play
+  /// the animation.
+  final honeyTurnedIntoBee = ValueNotifier<int>(0);
+
+  /// Bees still flying to the bee button. Each is added when it lands.
+  final List<double> _beesOnTheWay = [];
 
   /// Which screen we're on. Monsters only move while [GamePhase.playing].
   final phase = ValueNotifier<GamePhase>(GamePhase.menu);
@@ -66,6 +74,7 @@ class TeddyGame extends FlameGame {
     score.value = 0;
     honey.value = GameRules.startingHoney;
     beehives.value = 0;
+    _beesOnTheWay.clear();
     _clearBoard();
     phase.value = GamePhase.ready;
   }
@@ -169,6 +178,7 @@ class TeddyGame extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
+    _landBees(dt);
     if (!isPlaying) return;
     _collectPickups();
     if (!isPlaying) return;
@@ -210,9 +220,28 @@ class TeddyGame extends FlameGame {
     for (final jar in children.whereType<HoneyJar>().toList()) {
       if (jar.collected || !_near(jar, _pickupDistance)) continue;
       jar.collect();
-      honey.value = min(GameRules.maxHoney, honey.value + 1);
+      honey.value++;
       Sfx.jar.play();
       HapticFeedback.selectionClick();
+      if (honey.value >= GameRules.honeyForBeehive) _turnHoneyIntoBee();
+    }
+  }
+
+  /// Magic! 4 honey pots fly together and become a bee.
+  void _turnHoneyIntoBee() {
+    honey.value -= GameRules.honeyForBeehive;
+    _beesOnTheWay.add(GameRules.honeyToBeeSeconds);
+    honeyTurnedIntoBee.value++;
+  }
+
+  void _landBees(double dt) {
+    for (var i = _beesOnTheWay.length - 1; i >= 0; i--) {
+      _beesOnTheWay[i] -= dt;
+      if (_beesOnTheWay[i] <= 0) {
+        _beesOnTheWay.removeAt(i);
+        beehives.value++;
+        HapticFeedback.lightImpact();
+      }
     }
   }
 
@@ -282,7 +311,7 @@ class TeddyGame extends FlameGame {
 
   void _spawnHoneyJars(double dt) {
     final hasJar = children.whereType<HoneyJar>().any((j) => !j.collected);
-    if (hasJar || honey.value >= GameRules.maxHoney) return;
+    if (hasJar) return;
     _honeyJarTimer -= dt;
     if (_honeyJarTimer > 0) return;
     _honeyJarTimer = GameRules.honeyJarInterval;
